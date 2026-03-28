@@ -31,7 +31,7 @@ async function getIasaMeal(userId, userPw) {
             'pw': userPw
         });
 
-        // 1. 로그인 요청
+        // 로그인 요청
         await client.post(LOGIN_URL, loginPayload, {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -40,7 +40,7 @@ async function getIasaMeal(userId, userPw) {
             }
         });
 
-        // 2. 급식 페이지 요청
+        // 급식 페이지 요청
         const mealRes = await client.get(MEAL_URL);
 
         // // 로그인 실패 체크
@@ -48,7 +48,7 @@ async function getIasaMeal(userId, userPw) {
         //     throw new Error('로그인 세션을 가져오지 못했거나 급식 데이터가 없습니다.');
         // }
 
-        // 3. HTML 파싱 (오타 수정됨)
+        // HTML 파싱
         const $ = cheerio.load(mealRes.data);
         const mealResult = { breakfast: [], lunch: [], dinner: [] };
 
@@ -60,14 +60,11 @@ async function getIasaMeal(userId, userPw) {
             menuContainer.find('p').each((_, p) => {
                 let item;
 
-                // 1. <span> 태그(보통 숫자가 들어있음) 안의 내용을 먼저 제거
                 $(p).find('span').remove();
                 item = $(p).text().trim();
 
-                // 2. 혹시 남아있을지 모르는 숫자.숫자 패턴만 제거 (괄호는 보존)
-                // 메뉴 끝에 붙은 '1.2.3.' 형태나 '_5.6.' 형태를 지웁니다.
-                item = item.replace(/[0-9.]+(?=$)/g, '') // 끝에 붙은 숫자.지우기
-                    .replace(/_$/g, '')           // 마지막에 남은 언더바(_) 지우기
+                item = item.replace(/[0-9.]+(?=$)/g, '')
+                    .replace(/_$/g, '')
                     .trim();
 
                 if (item && item !== '자율') {
@@ -93,13 +90,11 @@ async function startServer() {
     let lastFetchDate = "";
 
     try {
-        // 1. 라우터 설정 (요청이 올 때마다 크롤링하도록 안으로 이동)
         app.post('/api/iasa/meal', async (req, res) => {
             console.log("------- 카카오톡 요청 수신 -------");
 
             const today = new Date().toLocaleDateString();
 
-            // 오늘 이미 크롤링한 데이터가 있다면 바로 반환 (속도 초고속)
             if (cachedMeal && lastFetchDate === today) {
                 return res.json(makeResponse(cachedMeal));
             }
