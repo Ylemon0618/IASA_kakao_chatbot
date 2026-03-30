@@ -5,6 +5,7 @@ const { wrapper } = require('axios-cookiejar-support');
 const { CookieJar } = require('tough-cookie');
 const express = require('express');
 const bodyParser = require('body-parser');
+const {locals} = require("express/lib/application");
 require('dotenv').config();
 
 const app = express();
@@ -21,55 +22,49 @@ const MEAL_URL = process.env.RIRO_MEAL;
 
 const PORT = parseInt(process.env.PORT);
 
-async function getIasaMeal(userId, userPw) {
+function buildRiroUrl(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dbCode = "2303";
+
+    return `${MEAL_URL}?db=${dbCode}&action=day&year=${year}&month=${month}&day=${day}`;
+}
+
+async function getIasaMeal(userId, userPw, targetDate) {
     try {
         const loginPayload = qs.stringify({
-            'app': 'user',
-            'mode': 'login',
-            'userType': 1,
-            'id': userId,
-            'pw': userPw
+            'app': 'user', 'mode': 'login', 'userType': 1, 'id': userId, 'pw': userPw
         });
 
-        // 로그인 요청
         await client.post(LOGIN_URL, loginPayload, {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'User-Agent': 'Mozilla/5.0',
                 'Referer': BASE_URL
             }
         });
 
-        // 급식 페이지 요청
-        const mealRes = await client.get(MEAL_URL);
+        const requestUrl = buildRiroUrl(targetDate);
+        console.log(`URL 요청: ${requestUrl}`);
 
-        // // 로그인 실패 체크
-        // if (mealRes.data.includes('login_check') || !mealRes.data.includes('meal_day_list')) {
-        //     throw new Error('로그인 세션을 가져오지 못했거나 급식 데이터가 없습니다.');
-        // }
-
-        // HTML 파싱
+        const mealRes = await client.get(requestUrl);
         const $ = cheerio.load(mealRes.data);
         const mealResult = { breakfast: [], lunch: [], dinner: [] };
 
         $('.meal_day_list').each((_, element) => {
-            const title = $(element).find('.meal_day_view_top .title').text().trim();
+            const title = $(element).find('.title').text().trim();
             const menuContainer = $(element).find('.meal_day_popup_btn');
-
             const menuItems = [];
-            menuContainer.find('p').each((_, p) => {
-                let item;
 
+            menuContainer.find('p').each((__, p) => {
                 $(p).find('span').remove();
-                item = $(p).text().trim();
-
-                item = item.replace(/[0-9.]+(?=$)/g, '')
+                let item = $(p).text().trim()
+                    .replace(/[0-9.]+(?=$)/g, '')
                     .replace(/_$/g, '')
                     .trim();
 
-                if (item && item !== '자율') {
-                    menuItems.push(item);
-                }
+                if (item && item !== '자율') menuItems.push(item);
             });
 
             if (title.includes('조식')) mealResult.breakfast = menuItems;
@@ -78,99 +73,86 @@ async function getIasaMeal(userId, userPw) {
         });
 
         return mealResult;
-
     } catch (error) {
-        console.error('에러 발생:', error.message);
+        console.error('❌ 크롤링 에러:', error.message);
         return null;
     }
 }
 
 async function startServer() {
-    let cachedMeal = null;
-    let lastFetchDate = "";
+    let cachedData = { today: null, tomorrow: null, lastFetch: "" };
 
-    try {
-        app.post('/api/iasa/meal', async (req, res) => {
-            console.log("------- 카카오톡 요청 수신 -------");
+    app.post('/api/iasa/meal', async (req, res) => {
+        console.log("------- Kakao Request received -------");
 
-            const today = new Date().toLocaleDateString();
+        const params = req.body.action.params;
+        const now = new Date();
+        const todayStr = now.toLocaleDateString();
 
-            if (cachedMeal && lastFetchDate === today) {
-                return res.json(makeResponse(cachedMeal));
-            }
+        if (cachedData.lastFetch !== todayStr) {
+            console.log("Data renewal...");
+            const tDate = new Date();
+            const tmrDate = new Date();
+            tmrDate.setDate(tmrDate.getDate() + 1);
 
-            const data = await getIasaMeal(process.env.RIRO_ID, process.env.RIRO_PW);
+            cachedData.today = await getIasaMeal(process.env.RIRO_ID, process.env.RIRO_PW, tDate);
+            cachedData.tomorrow = await getIasaMeal(process.env.RIRO_ID, process.env.RIRO_PW, tmrDate);
+            cachedData.lastFetch = todayStr;
+        }
 
-            if (!data) {
-                return res.json({
-                    version: "2.0",
-                    template: {outputs: [{simpleText: {text: "급식 정보를 가져오는 데 실패했습니다."}}]}
-                });
-            }
-            else {
-                cachedMeal = data
-                lastFetchDate = today;
-                return res.json(makeResponse(data));
-            }
-        });
+        const isTomorrow = params && (params.date || params.date_input);
+        const data = isTomorrow ? cachedData.tomorrow : cachedData.today;
 
-        app.listen(PORT, '0.0.0.0', () => {
-            console.log(`Server on ${PORT}`);
-        });
-    } catch (error) {
-        console.log(error);
-    }
+        if (!data || (data.breakfast.length === 0 && data.lunch.length === 0)) {
+            return res.json({
+                version: "2.0",
+                template: { outputs: [{ simpleText: { text: "급식 정보를 불러올 수 없습니다." } }] }
+            });
+        }
+
+        const response = await makeResponse(data, isTomorrow);
+        return res.json(response);
+    });
+
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`🚀 Server on ${PORT}`);
+    });
 }
 
-async function makeResponse(mealData) {
+async function makeResponse(mealData, isTomorrow) {
+    const dayLabel = isTomorrow ? "내일" : "오늘";
+    const nextDayLabel = isTomorrow ? "오늘" : "내일";
+
+    const formatItems = (menuArr) => {
+        if (!menuArr || menuArr.length === 0) return [{ title: "메뉴", description: "정보 없음" }];
+        return menuArr.slice(0, 10).map(m => ({ title: "메뉴", description: m }));
+    };
+
     return {
         version: "2.0",
         template: {
-            outputs: [
-                {
-                    carousel: {
-                        type: "itemCard",
-                        items: [
-                            {
-                                imageTitle: {
-                                    title: "🌅 오늘의 조식",
-                                    description: "Incheon Academy of Science and Arts"
-                                },
-                                title: "",
-                                description: "",
-                                itemList: mealData.breakfast.map(menu => ({title: "메뉴", description: menu})),
-                                buttons: [
-                                    {action: "webLink", label: "리로스쿨 보기", webLinkUrl: BASE_URL}
-                                ]
-                            },
-                            {
-                                imageTitle: {
-                                    title: "☀️ 오늘의 중식",
-                                    description: "Incheon Academy of Science and Arts"
-                                },
-                                title: "",
-                                description: "",
-                                itemList: mealData.lunch.map(menu => ({title: "메뉴", description: menu})),
-                                buttons: [
-                                    {action: "webLink", label: "리로스쿨 보기", webLinkUrl: BASE_URL}
-                                ]
-                            },
-                            {
-                                imageTitle: {
-                                    title: "🌙 오늘의 석식",
-                                    description: "Incheon Academy of Science and Arts"
-                                },
-                                title: "",
-                                description: "",
-                                itemList: mealData.dinner.map(menu => ({title: "메뉴", description: menu})),
-                                buttons: [
-                                    {action: "webLink", label: "리로스쿨 보기", webLinkUrl: BASE_URL}
-                                ]
-                            }
-                        ]
-                    }
+            outputs: [{
+                carousel: {
+                    type: "itemCard",
+                    items: [
+                        {
+                            imageTitle: { title: `🌅 ${dayLabel} 조식`, description: "IASA Meal" },
+                            itemList: formatItems(mealData.breakfast),
+                            buttons: [{ action: "message", label: `${nextDayLabel} 급식 보기`, webLinkUrl: `${nextDayLabel} 급식 알려줘` }]
+                        },
+                        {
+                            imageTitle: { title: `☀️ ${dayLabel} 중식`, description: "IASA Meal" },
+                            itemList: formatItems(mealData.lunch),
+                            buttons: [{ action: "webLink", label: "리로스쿨 보기", webLinkUrl: BASE_URL }]
+                        },
+                        {
+                            imageTitle: { title: `🌙 ${dayLabel} 석식`, description: "IASA Meal" },
+                            itemList: formatItems(mealData.dinner),
+                            buttons: [{ action: "webLink", label: "리로스쿨 보기", webLinkUrl: BASE_URL }]
+                        }
+                    ]
                 }
-            ]
+            }]
         }
     };
 }
