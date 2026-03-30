@@ -137,22 +137,23 @@ async function makeResponse(mealData, isTomorrow) {
                     items: [
                         {
                             imageTitle: { title: `🌅 ${dayLabel} 조식`, description: "IASA Meal" },
-                            itemList: formatItems(mealData.breakfast),
-                            buttons: [{ action: "message", label: `${nextDayLabel} 급식 보기`, webLinkUrl: `${nextDayLabel} 급식 알려줘` }]
+                            itemList: formatItems(mealData.breakfast)
                         },
                         {
                             imageTitle: { title: `☀️ ${dayLabel} 중식`, description: "IASA Meal" },
-                            itemList: formatItems(mealData.lunch),
-                            buttons: [{ action: "webLink", label: "리로스쿨 보기", webLinkUrl: BASE_URL }]
+                            itemList: formatItems(mealData.lunch)
                         },
                         {
                             imageTitle: { title: `🌙 ${dayLabel} 석식`, description: "IASA Meal" },
-                            itemList: formatItems(mealData.dinner),
-                            buttons: [{ action: "webLink", label: "리로스쿨 보기", webLinkUrl: BASE_URL }]
+                            itemList: formatItems(mealData.dinner)
                         }
                     ]
                 }
-            }]
+            }],
+            quickReplies: [
+                { label: `${nextDayLabel} 급식 확인하기`, action: "message", messageText: `${nextDayLabel} 급식 알려줘` },
+                { label: "리로스쿨 바로가기", action: "webLink", webLinkUrl: BASE_URL }
+            ]
         }
     };
 }
