@@ -118,10 +118,8 @@ function makeResponse(mealData, isTomorrow) {
     const dayLabel = isTomorrow ? "내일" : "오늘";
     const nextDayLabel = isTomorrow ? "오늘" : "내일";
 
-    // 메뉴 배열을 하나의 문자열로 합치는 함수
     const formatMenuText = (menuArr) => {
         if (!menuArr || menuArr.length === 0) return "급식 정보가 없습니다.";
-        // 최대 10개 또는 그 이상도 문자열로 합쳐서 보여줄 수 있습니다.
         return "🍴 " + menuArr.join("\n🍴 ");
     };
 
