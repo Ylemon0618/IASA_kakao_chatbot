@@ -14,14 +14,20 @@ async function saveTimetable(userId, day, rawText) {
         }));
 
         const result = await Timetable.findOneAndUpdate(
-            {userId: userId, day: day},
+            {
+                userId: userId,
+                day: day
+            },
             {
                 $set: {
                     schedule: scheduleData,
                     updatedAt: new Date()
                 }
             },
-            {upsert: true, new: true}
+            {
+                upsert: true,
+                new: true
+            }
         );
 
         console.log(`${day} schdule save completed: ${subjects.length}periods saved`);
