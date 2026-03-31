@@ -18,7 +18,6 @@ app.use('/api/iasa/meal', mealRouter);
 app.use('/api/iasa/schedule', scheduleRouter);
 
 const PORT = Number(process.env.PORT) || 25565;
-
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`server on ${PORT}`);
 });
