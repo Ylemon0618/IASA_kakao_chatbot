@@ -134,11 +134,6 @@ function makeResponse(mealData, isTomorrow) {
                             title: `🌅 ${dayLabel} 조식`,
                             description: formatMenuText(mealData.breakfast),
                             buttons: [
-                                {
-                                    action: "message",
-                                    label: `${nextDayLabel} 급식 보기`,
-                                    messageText: `${nextDayLabel} 급식 알려줘`
-                                },
                                 {action: "message", label: `${nextDayLabel} 급식 보기`, messageText: `${nextDayLabel} 급식 알려줘`}
                             ]
                         },
@@ -146,11 +141,6 @@ function makeResponse(mealData, isTomorrow) {
                             title: `☀️ ${dayLabel} 중식`,
                             description: formatMenuText(mealData.lunch),
                             buttons: [
-                                {
-                                    action: "message",
-                                    label: `${nextDayLabel} 급식 보기`,
-                                    messageText: `${nextDayLabel} 급식 알려줘`
-                                },
                                 {action: "webLink", label: "리로스쿨 바로가기", webLinkUrl: BASE_URL}
                             ]
                         },
@@ -158,11 +148,6 @@ function makeResponse(mealData, isTomorrow) {
                             title: `🌙 ${dayLabel} 석식`,
                             description: formatMenuText(mealData.dinner),
                             buttons: [
-                                {
-                                    action: "message",
-                                    label: `${nextDayLabel} 급식 보기`,
-                                    messageText: `${nextDayLabel} 급식 알려줘`
-                                },
                                 {action: "webLink", label: "리로스쿨 바로가기", webLinkUrl: BASE_URL}
                             ]
                         },
