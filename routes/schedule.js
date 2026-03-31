@@ -35,7 +35,7 @@ async function saveTimetable(userId, day, rawText) {
 
 router.post('/register', async (req, res) => {
     const userId = req.body.userRequest.user.id;
-    const mondaySchedule = req.body.action.params.monday; // 사용자가 입력한 전체 텍스트
+    const mondaySchedule = req.body.action.params.monday;
 
     if (!mondaySchedule) {
         return res.json({version: "2.0", template: {outputs: [{simpleText: {text: "내용을 입력해주세요."}}]}});
