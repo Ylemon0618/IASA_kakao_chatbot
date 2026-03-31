@@ -61,10 +61,10 @@ async function saveTeacher(userId, day, rawText) {
                     updatedAt: new Date()
                 }
             },
-            // {
-            //     upsert: true,
-            //     new: true
-            // }
+            {
+                upsert: true,
+                new: true
+            }
         );
 
         console.log(`${day} teacher save completed: ${subjects.length} of periods saved`);
