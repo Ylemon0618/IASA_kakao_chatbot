@@ -61,10 +61,10 @@ async function saveTeacher(userId, day, rawText) {
                     updatedAt: new Date()
                 }
             },
-            {
-                upsert: true,
-                new: true
-            }
+            // {
+            //     upsert: true,
+            //     new: true
+            // }
         );
 
         console.log(`${day} teacher save completed: ${subjects.length} of periods saved`);
@@ -109,6 +109,7 @@ router.post('register/teacher', async (req, res) => {
     const wednesdaySchedule = req.body.action.params.wednesday;
     const thursdaySchedule = req.body.action.params.thursday;
     const fridaySchedule = req.body.action.params.friday;
+    console.log(fridaySchedule);
 
     const mondaySaved = await saveTeacher(userId, "monday", mondaySchedule);
     const tuesdaySaved = await saveTeacher(userId, "tuesday", tuesdaySchedule);
