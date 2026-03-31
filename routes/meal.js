@@ -4,6 +4,7 @@ const qs = require('qs');
 const { wrapper } = require('axios-cookiejar-support');
 const { CookieJar } = require('tough-cookie');
 const express = require('express');
+const router = express.Router();
 const bodyParser = require('body-parser');
 const {locals} = require("express/lib/application");
 require('dotenv').config();
@@ -20,7 +21,9 @@ const BASE_URL = process.env.RIRO_URL;
 const LOGIN_URL = process.env.RIRO_LOGIN;
 const MEAL_URL = process.env.RIRO_MEAL;
 
-const PORT = parseInt(process.env.PORT);
+const PORT = parseInt(process.env.PORT) || 25565;
+
+let cachedData = { today: null, tomorrow: null, lastFetch: "" };
 
 function buildRiroUrl(date) {
     const year = date.getFullYear();
@@ -66,7 +69,6 @@ async function getIasaMeal(userId, userPw, targetDate) {
 
                 if (item && item !== '자율') menuItems.push(item);
             });
-
             if (title.includes('조식')) mealResult.breakfast = menuItems;
             else if (title.includes('중식')) mealResult.lunch = menuItems;
             else if (title.includes('석식')) mealResult.dinner = menuItems;
@@ -80,10 +82,8 @@ async function getIasaMeal(userId, userPw, targetDate) {
 }
 
 async function startServer() {
-    let cachedData = { today: null, tomorrow: null, lastFetch: "" };
-
-    app.post('/api/iasa/meal', async (req, res) => {
-        console.log("------- Kakao Request received -------");
+    router.post('/search', async (req, res) => {
+        console.log("------- Kakao Request received (meal) -------");
 
         const params = req.body.action.params;
         const now = new Date();
@@ -114,18 +114,18 @@ async function startServer() {
         return res.json(response);
     });
 
-    app.listen(PORT, '0.0.0.0', () => {
-        console.log(`🚀 Server on ${PORT}`);
-    });
+    module.exports = router;
 }
 
-async function makeResponse(mealData, isTomorrow) {
+function makeResponse(mealData, isTomorrow) {
     const dayLabel = isTomorrow ? "내일" : "오늘";
     const nextDayLabel = isTomorrow ? "오늘" : "내일";
 
-    const formatItems = (menuArr) => {
-        if (!menuArr || menuArr.length === 0) return [{ title: "메뉴", description: "정보 없음" }];
-        return menuArr.slice(0, 10).map(m => ({ title: "메뉴", description: m }));
+    // 메뉴 배열을 하나의 문자열로 합치는 함수
+    const formatMenuText = (menuArr) => {
+        if (!menuArr || menuArr.length === 0) return "급식 정보가 없습니다.";
+        // 최대 10개 또는 그 이상도 문자열로 합쳐서 보여줄 수 있습니다.
+        return "🍴 " + menuArr.join("\n🍴 ");
     };
 
     return {
@@ -133,27 +133,35 @@ async function makeResponse(mealData, isTomorrow) {
         template: {
             outputs: [{
                 carousel: {
-                    type: "itemCard",
+                    type: "textCard",
                     items: [
                         {
-                            imageTitle: { title: `🌅 ${dayLabel} 조식`, description: "IASA Meal" },
-                            itemList: formatItems(mealData.breakfast)
+                            title: `🌅 ${dayLabel} 조식`,
+                            description: formatMenuText(mealData.breakfast),
+                            buttons: [
+                                { action: "message", label: `${nextDayLabel} 급식 보기`, messageText: `${nextDayLabel} 급식 알려줘`},
+                                { action: "webLink", label: "리로스쿨 바로가기", webLinkUrl: BASE_URL }
+                            ]
                         },
                         {
-                            imageTitle: { title: `☀️ ${dayLabel} 중식`, description: "IASA Meal" },
-                            itemList: formatItems(mealData.lunch)
+                            title: `☀️ ${dayLabel} 중식`,
+                            description: formatMenuText(mealData.lunch),
+                            buttons: [
+                                { action: "message", label: `${nextDayLabel} 급식 보기`, messageText: `${nextDayLabel} 급식 알려줘`},
+                                { action: "webLink", label: "리로스쿨 바로가기", webLinkUrl: BASE_URL }
+                            ]
                         },
                         {
-                            imageTitle: { title: `🌙 ${dayLabel} 석식`, description: "IASA Meal" },
-                            itemList: formatItems(mealData.dinner)
-                        }
+                            title: `🌙 ${dayLabel} 석식`,
+                            description: formatMenuText(mealData.dinner),
+                            buttons: [
+                                { action: "message", label: `${nextDayLabel} 급식 보기`, messageText: `${nextDayLabel} 급식 알려줘`},
+                                { action: "webLink", label: "리로스쿨 바로가기", webLinkUrl: BASE_URL }
+                            ]
+                        },
                     ]
                 }
-            }],
-            quickReplies: [
-                { label: `${nextDayLabel} 급식 확인하기`, action: "message", messageText: `${nextDayLabel} 급식 알려줘` },
-                { label: "리로스쿨 바로가기", action: "webLink", webLinkUrl: BASE_URL }
-            ]
+            }]
         }
     };
 }
