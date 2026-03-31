@@ -30,7 +30,7 @@ async function saveTimetable(userId, day, rawText) {
             }
         );
 
-        console.log(`${day} schdule save completed: ${subjects.length}periods saved`);
+        console.log(`${day} schdule save completed: ${subjects.length} of periods saved`);
         return result;
 
     } catch (error) {
