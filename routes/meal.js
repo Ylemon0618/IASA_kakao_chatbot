@@ -73,7 +73,7 @@ async function getIasaMeal(userId, userPw, targetDate) {
 
         return mealResult;
     } catch (error) {
-        console.error('Error on crawling: ', error.message);
+        console.error('Error on crawling:', error.message);
         return null;
     }
 }
