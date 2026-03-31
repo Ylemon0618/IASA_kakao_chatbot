@@ -6,7 +6,6 @@ const {CookieJar} = require('tough-cookie');
 const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
-const {locals} = require("express/lib/application");
 require('dotenv').config();
 
 const app = express();
@@ -20,8 +19,6 @@ const client = wrapper(axios.create({jar}));
 const BASE_URL = process.env.RIRO_URL;
 const LOGIN_URL = process.env.RIRO_LOGIN;
 const MEAL_URL = process.env.RIRO_MEAL;
-
-const PORT = parseInt(process.env.PORT) || 25565;
 
 let cachedData = {today: null, tomorrow: null, lastFetch: ""};
 
