@@ -58,13 +58,7 @@ router.post('/register', async (req, res) => {
             version: "2.0",
             template: {
                 outputs: [{
-                    simpleText: {text: `📅 시간표가 성공적으로 등록되었습니다.
-                    
-                    월요일: ${mondaySaved.schedule.length}교시
-                    화요일: ${tuesdaySaved.schedule.length}교시
-                    수요일: ${wednesdaySaved.schedule.length}교시
-                    목요일: ${thursdaySaved.schedule.length}교시
-                    금요일: ${fridaySaved.schedule.length}교시`}
+                    simpleText: {text: `📅 시간표가 성공적으로 등록되었습니다.\n\n월요일: ${mondaySaved.schedule.length}교시\n화요일: ${tuesdaySaved.schedule.length}교시\n수요일: ${wednesdaySaved.schedule.length}교시\n목요일: ${thursdaySaved.schedule.length}교시\n금요일: ${fridaySaved.schedule.length}교시`}
                 }]
             }
         });
