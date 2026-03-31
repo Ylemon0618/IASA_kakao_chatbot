@@ -12,7 +12,7 @@ mongoose.connect(process.env.MONGO_URI)
     .catch(err => console.log(err));
 
 const mealRouter = require('./routes/meal');
-const scheduleRouter = require('./routes/schedule');
+const scheduleRouter = require('./routes/schedule_upload');
 
 app.use('/api/iasa/meal', mealRouter);
 app.use('/api/iasa/schedule', scheduleRouter);
