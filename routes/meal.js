@@ -1,8 +1,8 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 const qs = require('qs');
-const { wrapper } = require('axios-cookiejar-support');
-const { CookieJar } = require('tough-cookie');
+const {wrapper} = require('axios-cookiejar-support');
+const {CookieJar} = require('tough-cookie');
 const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
@@ -12,10 +12,10 @@ require('dotenv').config();
 const app = express();
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 
 const jar = new CookieJar();
-const client = wrapper(axios.create({ jar }));
+const client = wrapper(axios.create({jar}));
 
 const BASE_URL = process.env.RIRO_URL;
 const LOGIN_URL = process.env.RIRO_LOGIN;
@@ -23,7 +23,7 @@ const MEAL_URL = process.env.RIRO_MEAL;
 
 const PORT = parseInt(process.env.PORT) || 25565;
 
-let cachedData = { today: null, tomorrow: null, lastFetch: "" };
+let cachedData = {today: null, tomorrow: null, lastFetch: ""};
 
 function buildRiroUrl(date) {
     const year = date.getFullYear();
@@ -53,7 +53,7 @@ async function getIasaMeal(userId, userPw, targetDate) {
 
         const mealRes = await client.get(requestUrl);
         const $ = cheerio.load(mealRes.data);
-        const mealResult = { breakfast: [], lunch: [], dinner: [] };
+        const mealResult = {breakfast: [], lunch: [], dinner: []};
 
         $('.meal_day_list').each((_, element) => {
             const title = $(element).find('.title').text().trim();
@@ -106,7 +106,7 @@ async function startServer() {
         if (!data || (data.breakfast.length === 0 && data.lunch.length === 0)) {
             return res.json({
                 version: "2.0",
-                template: { outputs: [{ simpleText: { text: "급식 정보를 불러올 수 없습니다." } }] }
+                template: {outputs: [{simpleText: {text: "급식 정보를 불러올 수 없습니다."}}]}
             });
         }
 
@@ -139,24 +139,36 @@ function makeResponse(mealData, isTomorrow) {
                             title: `🌅 ${dayLabel} 조식`,
                             description: formatMenuText(mealData.breakfast),
                             buttons: [
-                                { action: "message", label: `${nextDayLabel} 급식 보기`, messageText: `${nextDayLabel} 급식 알려줘`},
-                                { action: "webLink", label: "리로스쿨 바로가기", webLinkUrl: BASE_URL }
+                                {
+                                    action: "message",
+                                    label: `${nextDayLabel} 급식 보기`,
+                                    messageText: `${nextDayLabel} 급식 알려줘`
+                                },
+                                {action: "webLink", label: "리로스쿨 바로가기", webLinkUrl: BASE_URL}
                             ]
                         },
                         {
                             title: `☀️ ${dayLabel} 중식`,
                             description: formatMenuText(mealData.lunch),
                             buttons: [
-                                { action: "message", label: `${nextDayLabel} 급식 보기`, messageText: `${nextDayLabel} 급식 알려줘`},
-                                { action: "webLink", label: "리로스쿨 바로가기", webLinkUrl: BASE_URL }
+                                {
+                                    action: "message",
+                                    label: `${nextDayLabel} 급식 보기`,
+                                    messageText: `${nextDayLabel} 급식 알려줘`
+                                },
+                                {action: "webLink", label: "리로스쿨 바로가기", webLinkUrl: BASE_URL}
                             ]
                         },
                         {
                             title: `🌙 ${dayLabel} 석식`,
                             description: formatMenuText(mealData.dinner),
                             buttons: [
-                                { action: "message", label: `${nextDayLabel} 급식 보기`, messageText: `${nextDayLabel} 급식 알려줘`},
-                                { action: "webLink", label: "리로스쿨 바로가기", webLinkUrl: BASE_URL }
+                                {
+                                    action: "message",
+                                    label: `${nextDayLabel} 급식 보기`,
+                                    messageText: `${nextDayLabel} 급식 알려줘`
+                                },
+                                {action: "webLink", label: "리로스쿨 바로가기", webLinkUrl: BASE_URL}
                             ]
                         },
                     ]

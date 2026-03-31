@@ -5,17 +5,17 @@ const mongoose = require('mongoose');
 const app = express();
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.log(err));
 
 const mealRouter = require('./routes/meal');
-// const timetableRouter = require('./routes/timetable');
+const scheduleRouter = require('./routes/schedule');
 
 app.use('/api/iasa/meal', mealRouter);
-// app.use('/api/timetable', timetableRouter);
+app.use('/api/iasa/schedule', scheduleRouter);
 
 const PORT = Number(process.env.PORT) || 25565;
 app.listen(PORT, '0.0.0.0', () => {
