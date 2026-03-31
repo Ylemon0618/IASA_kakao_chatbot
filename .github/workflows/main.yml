@@ -28,7 +28,8 @@ jobs:
             cd ~/IASAchatbot
             git pull origin master
             npm install
-            pm2 start -f app.js
+            pm2 kill
+            pm2 start app.js --name IASAchatbot
 
       - name: Skip deployment in fork
         env:
