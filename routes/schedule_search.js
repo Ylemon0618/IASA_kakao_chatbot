@@ -29,9 +29,23 @@ async function getSchedules(req, res, isTomorrow = False) {
         const data = await Timetable.findOne({userId: userId, day: scheduleDay});
 
         if (!data || !data.schedule || data.schedule.length === 0) {
+            let messageText = `📅 ${isTomorrow ? "내일" : "오늘"}(${scheduleDay})은 등록된 시간표가 없습니다.`;
+            if (scheduleDayIndex > 0 && scheduleDayIndex <= 5) messageText += `주중 시간표를 설정하려면 아래 버튼을 클릭 해 주세요.`;
+
+            let temp = {
+                outputs: [{
+                    simpleText: {
+                        text: messageText
+                    }
+                }]
+            }
+            if (scheduleDayIndex > 0 && scheduleDayIndex <= 5) temp.quickReplies = [
+                {label: "시간표 설정하기", action: "message", messageText: "시간표 등록하기"}
+            ]
+
             return res.json({
                 version: "2.0",
-                template: {outputs: [{simpleText: {text: `📅 ${isTomorrow ? "내일" : "오늘"}(${scheduleDay})은 등록된 시간표가 없습니다.`}}]}
+                template: temp
             });
         }
 
