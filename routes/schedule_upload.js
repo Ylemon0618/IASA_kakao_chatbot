@@ -41,7 +41,7 @@ async function saveTimetable(userId, day, rawText) {
 
 async function saveTeacher(userId, day, rawText) {
     try {
-        const timetable = await Timetable.findOne({userId: userId, day: day});
+        let timetable = await Timetable.findOne({userId: userId, day: day});
 
         if (!timetable) {return null;}
 
