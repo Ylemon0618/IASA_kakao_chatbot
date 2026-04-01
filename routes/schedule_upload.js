@@ -104,7 +104,7 @@ router.post('/register/name', async (req, res) => {
     }
 });
 
-router.post('register/teacher', async (req, res) => {
+router.post('/register/teacher', async (req, res) => {
     console.log(req.body.action.params)
     const userId = req.body.userRequest.user.id;
     const mondaySchedule = req.body.action.params.monday;
