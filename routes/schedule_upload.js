@@ -124,7 +124,7 @@ async function saveRoom(userId, day, rawText) {
     }
 }
 
-router.post('/register/name', async (req, res) => {
+router.post('/name', async (req, res) => {
     const userId = req.body.userRequest.user.id;
     const mondaySchedule = req.body.action.params.monday;
     const tuesdaySchedule = req.body.action.params.tuesday;
@@ -160,7 +160,7 @@ router.post('/register/name', async (req, res) => {
     }
 });
 
-router.post('/register/teacher', async (req, res) => {
+router.post('/teacher', async (req, res) => {
     const userId = req.body.userRequest.user.id;
     const mondaySchedule = req.body.action.params.monday;
     const tuesdaySchedule = req.body.action.params.tuesday;
@@ -196,7 +196,7 @@ router.post('/register/teacher', async (req, res) => {
     }
 });
 
-router.post('/register/room', async (req, res) => {
+router.post('/room', async (req, res) => {
     const userId = req.body.userRequest.user.id;
     const mondaySchedule = req.body.action.params.monday;
     const tuesdaySchedule = req.body.action.params.tuesday;

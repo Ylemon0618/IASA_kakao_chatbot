@@ -16,7 +16,7 @@ function getRotatedTeacher(teachers, startDate, offset = 0) {
     return teachers[teacherIndex];
 }
 
-router.post('/search/tomorrow', async (req, res) => {
+router.post('/tomorrow', async (req, res) => {
     const userId = req.body.userRequest.user.id;
 
     const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
