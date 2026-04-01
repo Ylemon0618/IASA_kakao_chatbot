@@ -116,6 +116,7 @@ router.post('/register/teacher', async (req, res) => {
     const wednesdaySaved = await saveTeacher(userId, "wednesday", wednesdaySchedule);
     const thursdaySaved = await saveTeacher(userId, "thursday", thursdaySchedule);
     const fridaySaved = await saveTeacher(userId, "friday", fridaySchedule);
+    console.log(mondaySaved)
 
     if (mondaySaved && tuesdaySaved && wednesdaySaved && thursdaySaved && fridaySaved) {
         return res.json({
