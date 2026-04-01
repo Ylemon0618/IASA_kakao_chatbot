@@ -126,9 +126,9 @@ async function saveRotation(userId, day, period, teacher) {
         date.setDate(now.getDate() - 7 * teacherIndex - 1);
         date.setHours(0, 0, 0, 0);
 
-        const scheduleData = timetable.schedule.map((item, index) => ({
+        const scheduleData = timetable.schedule.map((item) => ({
             ...item,
-            rotationDate: item.period === period + 1 ? date : item.rotationDate
+            rotationDate: item.period === period ? date : item.rotationDate
         }))
 
         return await Timetable.findOneAndUpdate(
