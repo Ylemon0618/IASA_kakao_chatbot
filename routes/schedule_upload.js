@@ -267,8 +267,6 @@ router.post('/rotation', async (req, res) => {
     const period = parseInt(req.body.action.params.period[0]);
     const teacher = req.body.action.params.teacher;
 
-    console.log(day, period, teacher);
-
     const saved = await saveRotation(userId, day, period, teacher);
 
     if (saved) {
