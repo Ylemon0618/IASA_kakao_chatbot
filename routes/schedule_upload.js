@@ -261,8 +261,11 @@ router.post('/room', async (req, res) => {
 });
 
 router.post('/rotation', async (req, res) => {
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const daysKo = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+
     const userId = req.body.userRequest.user.id;
-    const day = req.body.action.params.day;
+    const day = days[daysKo.indexOf(req.body.action.params.day)];
     const period = parseInt(req.body.action.params.period[0]);
     const teacher = req.body.action.params.teacher;
 
