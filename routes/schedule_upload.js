@@ -11,9 +11,9 @@ async function saveTimetable(userId, day, rawText) {
         const scheduleData = subjects.map((subject, index) => ({
             period: index + 1,
             subject: subject,
-            teacher: '',
-            teacher_last: '',
-            room: ''
+            teacher: 'Null',
+            teacher_last: 'Null',
+            room: 'Null'
         }));
 
         const result = await Timetable.findOneAndUpdate(
