@@ -10,10 +10,7 @@ async function saveTimetable(userId, day, rawText) {
 
         const scheduleData = subjects.map((subject, index) => ({
             period: index + 1,
-            subject: subject,
-            teacher: 'Null',
-            teacher_last: 'Null',
-            room: 'Null'
+            subject: subject
         }));
 
         const result = await Timetable.findOneAndUpdate(
@@ -44,18 +41,13 @@ async function saveTimetable(userId, day, rawText) {
 
 async function saveTeacher(userId, day, rawText) {
     try {
-        const timetable = await Timetable.findOne({userId: userId, day: day})
-
         const teachers = rawText.split(' ')
             .map(item => item.trim())
             .filter(item => item.length > 0);
 
-        const scheduleData = timetable.schedule.map((item, index) => ({
-            period: item.period,
-            subject: item.subject,
-            teacher: teachers[index],
-            teacher_last: item.teacher_last,
-            room: item.room
+        const scheduleData = teachers.map((teacher, index) => ({
+            period: index + 1,
+            teacher: teacher
         }));
 
         const result = await Timetable.findOneAndUpdate(
