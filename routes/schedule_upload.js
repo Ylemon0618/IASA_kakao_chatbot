@@ -117,7 +117,7 @@ async function saveRoom(userId, day, rawText) {
             }
         );
 
-        console.log(`${day} room save completed: ${teachers.length} of periods saved`);
+        console.log(`${day} room save completed: ${rooms.length} of periods saved`);
         return result;
 
     } catch (error) {
