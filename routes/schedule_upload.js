@@ -124,9 +124,11 @@ async function saveRotation(userId, day, period, teacher) {
         const now = new Date();
         const date = new Date();
         date.setDate(now.getDate() - 7 * teacherIndex - 1);
+        date.setHours(0, 0, 0, 0);
 
         let scheduleData = timetable.schedule;
         scheduleData[period - 1].rotationDate = date;
+        console.log(scheduleData);
 
         return await Timetable.findOneAndUpdate(
             {
