@@ -280,6 +280,11 @@ router.post('/rotation', async (req, res) => {
     } else {
         return res.json({
             version: "2.0",
+            template: {
+                outputs: [{
+                    simpleText: {text: `등록에 실패했습니다.\n선생님 성함이 맞는지 다시 한번 확인해 주세요.`}
+                }]
+            }
         })
     }
 });
