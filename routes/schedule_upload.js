@@ -42,6 +42,7 @@ async function saveTimetable(userId, day, rawText) {
 async function saveTeacher(userId, day, rawText) {
     try {
         const timetable = await Timetable.findOne({userId: userId, day: day});
+        console.log(timetable);
 
         const teachers = rawText.split(' ')
             .map(item => item.trim())
@@ -86,10 +87,20 @@ router.post('/register/name', async (req, res) => {
             version: "2.0",
             template: {
                 outputs: [{
-                    simpleText: {text: `📅 시간표가 성공적으로 등록되었습니다.`}
+                    simpleText: {text: `📅 시간표에 선생님이 성공적으로 등록되었습니다.`}
                 }]
             }
         });
+    }
+    else {
+        res.json({
+            version: "2.0",
+            template: {
+                outputs: [{
+                    simpleText: {text: `등록에 실패했습니다.`}
+                }]
+            }
+        })
     }
 });
 
