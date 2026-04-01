@@ -43,23 +43,24 @@ async function saveTeacher(userId, day, rawText) {
     try {
         const timetable = await Timetable.findOne({userId: userId, day: day});
 
+        if (!timetable) {return null;}
+
         const teachers = rawText.split(' ')
             .map(item => item.trim())
             .filter(item => item.length > 0);
 
-        const scheduleData = timetable.schedule.map((item, index) => ({
-            period: item.period,
-            subject: item.subject,
-            teacher: teachers[index]
-        }));
-
-        const result = await Timetable.updateOne(
-            {_id: timetable._id},
-            {$set: {schedule: scheduleData, updatedAt: new Date()}},
-        )
+        timetable.schedule = timetable.schedule.map((item, index) => {
+            return {
+                period: item.period,
+                subject: item.subject,
+                teacher: teachers[index]
+            }
+        });
+        timetable.updatedAt = new Date();
+        await timetable.save();
 
         console.log(`${day} teacher save completed: ${teachers.length} of periods saved`);
-        return result;
+        return timetable.schedule;
 
     } catch (error) {
         console.error('Error on ./routes/schdule.js while saving teacher:', error.message);
