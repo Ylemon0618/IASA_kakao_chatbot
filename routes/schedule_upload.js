@@ -45,9 +45,9 @@ async function saveTeacher(userId, day, rawText) {
             .map(item => item.trim())
             .filter(item => item.length > 0);
 
-        const scheduleData = teachers.map((subject, index) => ({
+        const scheduleData = teachers.map((teacher, index) => ({
             period: index + 1,
-            subject: subject
+            teacher: teacher
         }));
 
         const result = await Timetable.findOneAndUpdate(
