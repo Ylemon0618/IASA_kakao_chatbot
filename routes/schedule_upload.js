@@ -46,7 +46,7 @@ async function saveTeacher(userId, day, rawText) {
     try {
         const timetable = await Timetable.findOne({userId: userId, day: day})
 
-        const teachers = rawText.split(' ')
+        const teachers = rawText.split(' ').split('/')
             .map(item => item.trim())
             .filter(item => item.length > 0);
 
