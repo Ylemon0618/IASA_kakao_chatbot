@@ -70,7 +70,6 @@ async function saveTeacher(userId, day, rawText) {
 
 router.post('/register/name', async (req, res) => {
     const userId = req.body.userRequest.user.id;
-    console.log(req.body.action.params)
     const mondaySchedule = req.body.action.params.monday;
     const tuesdaySchedule = req.body.action.params.tuesday;
     const wednesdaySchedule = req.body.action.params.wednesday;
@@ -84,7 +83,7 @@ router.post('/register/name', async (req, res) => {
     const fridaySaved = await saveTimetable(userId, "friday", fridaySchedule);
 
     if (mondaySaved && tuesdaySaved && wednesdaySaved && thursdaySaved && fridaySaved) {
-        res.json({
+        return res.json({
             version: "2.0",
             template: {
                 outputs: [{
@@ -94,7 +93,7 @@ router.post('/register/name', async (req, res) => {
         });
     }
     else {
-        res.json({
+        return res.json({
             version: "2.0",
             template: {
                 outputs: [{
@@ -106,8 +105,8 @@ router.post('/register/name', async (req, res) => {
 });
 
 router.post('register/teacher', async (req, res) => {
-    const userId = req.body.userRequest.user.id;
     console.log(req.body.action.params)
+    const userId = req.body.userRequest.user.id;
     const mondaySchedule = req.body.action.params.monday;
     const tuesdaySchedule = req.body.action.params.tuesday;
     const wednesdaySchedule = req.body.action.params.wednesday;
@@ -121,7 +120,7 @@ router.post('register/teacher', async (req, res) => {
     const fridaySaved = await saveTeacher(userId, "friday", fridaySchedule);
 
     if (mondaySaved && tuesdaySaved && wednesdaySaved && thursdaySaved && fridaySaved) {
-        res.json({
+        return res.json({
             version: "2.0",
             template: {
                 outputs: [{
@@ -131,7 +130,7 @@ router.post('register/teacher', async (req, res) => {
         });
     }
     else {
-        res.json({
+        return res.json({
             version: "2.0",
             template: {
                 outputs: [{
