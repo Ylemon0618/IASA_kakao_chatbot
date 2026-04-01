@@ -23,7 +23,7 @@ router.post('/tomorrow', async (req, res) => {
     const daysKo = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
     const tomorrowIndex = (new Date().getDay() + 1) % 7;
     const tomorrowDay = days[tomorrowIndex];
-    const tomorrowDayKo = daysKo[tomorrowDay];
+    const tomorrowDayKo = daysKo[tomorrowIndex];
 
     try {
         const data = await Timetable.findOne({userId: userId, day: tomorrowDay});
