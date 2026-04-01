@@ -39,18 +39,21 @@ router.post('/tomorrow', async (req, res) => {
             const teacher = getRotatedTeacher(item.teacher, item.rotationDate);
 
             let items = {
-                title: `${item.period}교시: ${item.subject}`,
-                description: "IASA Tomorrow Schedule",
+                imageTitle: {
+                    title: `${item.period}교시: ${item.subject}`,
+                    description: `IASA Tomorrow Schedule`,
+                },
                 itemList: [
                     {
                         title: "담당 교사",
-                        description: teacher || `${item.teacher.join('/')}\n현재 주차의 담당 교사를 지정하려면 아래 버튼을 클릭 해 주세요.`
+                        description: teacher || `${item.teacher.join('/')}`
                     },
                     {title: "수업 장소", description: item.room || "미지정"}
-                ]
+                ],
             };
 
             if (!teacher) {
+                items.description = "현재 주차의 담당 교사를 지정하려면 아래 버튼을 클릭 해 주세요."
                 items.buttons = [
                     {
                         action: "message",
