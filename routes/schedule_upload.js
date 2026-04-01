@@ -58,7 +58,7 @@ async function saveTeacher(userId, day, rawText) {
             {$set: {schedule: scheduleData, updatedAt: new Date()}},
         )
 
-        console.log(`${day} teacher save completed: ${subjects.length} of periods saved`);
+        console.log(`${day} teacher save completed: ${teachers.length} of periods saved`);
         return result;
 
     } catch (error) {
