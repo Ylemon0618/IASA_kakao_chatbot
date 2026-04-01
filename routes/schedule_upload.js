@@ -13,7 +13,7 @@ async function saveTimetable(userId, day, rawText) {
             subject: subject
         }));
 
-        const result = await Timetable.findOneAndUpdate(
+        return await Timetable.findOneAndUpdate(
             {
                 userId: userId,
                 day: day
@@ -29,10 +29,6 @@ async function saveTimetable(userId, day, rawText) {
                 new: true
             }
         );
-
-        console.log(`${day} schdule save completed: ${subjects.length} of periods saved`);
-        return result;
-
     } catch (error) {
         console.error('Error on ./routes/schdule.js while saving schedule:', error.message);
         return null;
@@ -56,7 +52,7 @@ async function saveTeacher(userId, day, rawText) {
             room: item.room
         }));
 
-        const result = await Timetable.findOneAndUpdate(
+        return await Timetable.findOneAndUpdate(
             {
                 userId: userId,
                 day: day
@@ -72,10 +68,6 @@ async function saveTeacher(userId, day, rawText) {
                 new: true
             }
         );
-
-        console.log(`${day} teacher save completed: ${teachers.length} of periods saved`);
-        return result;
-
     } catch (error) {
         console.error('Error on ./routes/schdule.js while saving teacher:', error.message);
         return null;
@@ -98,7 +90,7 @@ async function saveRoom(userId, day, rawText) {
             room: rooms[index]
         }));
 
-        const result = await Timetable.findOneAndUpdate(
+        return await Timetable.findOneAndUpdate(
             {
                 userId: userId,
                 day: day
@@ -114,12 +106,51 @@ async function saveRoom(userId, day, rawText) {
                 new: true
             }
         );
-
-        console.log(`${day} room save completed: ${rooms.length} of periods saved`);
-        return result;
-
     } catch (error) {
         console.error('Error on ./routes/schdule.js while saving room:', error.message);
+        return null;
+    }
+}
+
+async function saveRotation(userId, day, period, teacher) {
+    try {
+        const timetable = await Timetable.findOne({userId: userId, day: day})
+        const teachers = timetable.schedule[period - 1].teacher;
+
+        if (!timetable.schedule[period - 1].teacher.include(teacher)) return null;
+
+        const teacherIndex = teachers.indexOf(teacher);
+
+        const now = new Date();
+        const date = new Date();
+        date.setDate(now.getDate() - 7 * teacherIndex - 1);
+
+        const scheduleData = timetable.schedule.map((item, index) => ({
+            period: item.period,
+            subject: item.subject,
+            teacher: item.teacher,
+            rotationDate: item.period === period ? date : item.rotationDate,
+            room: item.room
+        }))
+
+        return await Timetable.findOneAndUpdate(
+            {
+                userId: userId,
+                day: day
+            },
+            {
+                $set: {
+                    schedule: scheduleData,
+                    updatedAt: new Date()
+                }
+            },
+            {
+                upsert: true,
+                new: true
+            }
+        );
+    } catch (error) {
+        console.error('Error on ./routes/schdule.js while saving rotation:', error.message);
         return null;
     }
 }
@@ -147,8 +178,7 @@ router.post('/name', async (req, res) => {
                 }]
             }
         });
-    }
-    else {
+    } else {
         return res.json({
             version: "2.0",
             template: {
@@ -183,8 +213,7 @@ router.post('/teacher', async (req, res) => {
                 }]
             }
         });
-    }
-    else {
+    } else {
         return res.json({
             version: "2.0",
             template: {
@@ -219,8 +248,7 @@ router.post('/room', async (req, res) => {
                 }]
             }
         });
-    }
-    else {
+    } else {
         return res.json({
             version: "2.0",
             template: {
@@ -228,6 +256,30 @@ router.post('/room', async (req, res) => {
                     simpleText: {text: `등록에 실패했습니다.`}
                 }]
             }
+        })
+    }
+});
+
+router.post('/rotation', async (req, res) => {
+    const userId = req.body.userRequest.user.id;
+    const day = req.body.action.params.day;
+    const period = req.body.action.params.period;
+    const teacher = req.body.action.params.teacher;
+
+    const saved = await saveRotation(userId, day, period, teacher);
+
+    if (saved) {
+        return res.json({
+            version: "2.0",
+            template: {
+                outputs: [{
+                    simpleText: {text: `📅 이번 주차의 선생님이 성공적으로 등록되었습니다.`}
+                }]
+            }
+        })
+    } else {
+        return res.json({
+            version: "2.0",
         })
     }
 });
