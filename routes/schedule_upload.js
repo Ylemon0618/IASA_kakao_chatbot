@@ -42,7 +42,6 @@ async function saveTimetable(userId, day, rawText) {
 async function saveTeacher(userId, day, rawText) {
     try {
         const timetable = await Timetable.findOne({userId: userId, day: day});
-        console.log(timetable);
 
         const teachers = rawText.split(' ')
             .map(item => item.trim())
@@ -51,7 +50,7 @@ async function saveTeacher(userId, day, rawText) {
         const scheduleData = timetable.schedule.map((item, index) => ({
             period: item.period,
             subject: item.subject,
-            teacher: teachers[index] || item.teacher
+            teacher: teachers[index]
         }));
 
         const result = await Timetable.updateOne(
@@ -105,9 +104,6 @@ router.post('/register/name', async (req, res) => {
 });
 
 router.post('/register/teacher', async (req, res) => {
-    console.log(req.body)
-    console.log(req.body.action)
-    console.log(req.body.action.params)
     const userId = req.body.userRequest.user.id;
     const mondaySchedule = req.body.action.params.monday;
     const tuesdaySchedule = req.body.action.params.tuesday;
