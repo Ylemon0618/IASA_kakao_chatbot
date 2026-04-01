@@ -46,8 +46,9 @@ async function saveTeacher(userId, day, rawText) {
     try {
         const timetable = await Timetable.findOne({userId: userId, day: day})
 
-        const teachers = rawText.split(' ').split('/')
+        const teachers = rawText.split(' ')
             .map(item => item.trim())
+            .map(item => item.split('/'))
             .filter(item => item.length > 0);
 
         const scheduleData = timetable.schedule.map((item, index) => ({
