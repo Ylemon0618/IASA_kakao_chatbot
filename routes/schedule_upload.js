@@ -70,6 +70,7 @@ async function saveTeacher(userId, day, rawText) {
 
 router.post('/register/name', async (req, res) => {
     const userId = req.body.userRequest.user.id;
+    console.log(req.body.action.params)
     const mondaySchedule = req.body.action.params.monday;
     const tuesdaySchedule = req.body.action.params.tuesday;
     const wednesdaySchedule = req.body.action.params.wednesday;
@@ -87,7 +88,7 @@ router.post('/register/name', async (req, res) => {
             version: "2.0",
             template: {
                 outputs: [{
-                    simpleText: {text: `📅 시간표에 선생님이 성공적으로 등록되었습니다.`}
+                    simpleText: {text: `📅 시간표가 성공적으로 등록되었습니다.`}
                 }]
             }
         });
@@ -127,6 +128,16 @@ router.post('register/teacher', async (req, res) => {
                 }]
             }
         });
+    }
+    else {
+        res.json({
+            version: "2.0",
+            template: {
+                outputs: [{
+                    simpleText: {text: `등록에 실패했습니다.`}
+                }]
+            }
+        })
     }
 });
 
