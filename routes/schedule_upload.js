@@ -116,12 +116,8 @@ async function saveRotation(userId, day, period, teacher) {
     try {
         const timetable = await Timetable.findOne({userId: userId, day: day})
         const teachers = timetable.schedule[period - 1].teacher;
-        console.log(teachers);
 
-        if (!teachers.include(teacher)) {
-            console.log(`test`);
-            return null;
-        }
+        if (!teachers.include(teacher)) return null;
 
         const teacherIndex = teachers.indexOf(teacher);
 
@@ -129,13 +125,8 @@ async function saveRotation(userId, day, period, teacher) {
         const date = new Date();
         date.setDate(now.getDate() - 7 * teacherIndex - 1);
 
-        const scheduleData = timetable.schedule.map((item, index) => ({
-            period: index + 1,
-            subject: item.subject,
-            teacher: item.teacher,
-            rotationDate: item.period === period ? date : item.rotationDate,
-            room: item.room
-        }))
+        let scheduleData = timetable.schedule;
+        scheduleData[period - 1].rotationDate = date;
 
         return await Timetable.findOneAndUpdate(
             {
