@@ -12,7 +12,10 @@ const timetableSchema = new mongoose.Schema({
     schedule: [
         {
             period: Number,
-            subject: String
+            subject: String,
+            teacher: String,
+            teacher_last: String,
+            room: String,
         }
     ],
     updatedAt: {
