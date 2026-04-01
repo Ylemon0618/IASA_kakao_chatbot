@@ -107,6 +107,7 @@ router.post('/register/name', async (req, res) => {
 
 router.post('register/teacher', async (req, res) => {
     const userId = req.body.userRequest.user.id;
+    console.log(req.body.action.params)
     const mondaySchedule = req.body.action.params.monday;
     const tuesdaySchedule = req.body.action.params.tuesday;
     const wednesdaySchedule = req.body.action.params.wednesday;
