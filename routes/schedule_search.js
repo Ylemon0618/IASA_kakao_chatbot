@@ -83,7 +83,7 @@ router.post('/day', async (req, res) => {
         });
     }
 
-    return {
+    return res.json({
         version: "2.0",
         template: {
             outputs: [
@@ -99,7 +99,7 @@ router.post('/day', async (req, res) => {
                 {label: "급식 확인하기", action: "message", messageText: "내일 급식 뭐야"}
             ]
         }
-    };
+    });
 });
 
 module.exports = router;
