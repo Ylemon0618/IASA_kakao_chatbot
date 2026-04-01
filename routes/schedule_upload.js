@@ -50,7 +50,10 @@ async function saveTeacher(userId, day, rawText) {
 
         const scheduleData = timetable.schedule.map((item, index) => ({
             period: item.period,
-            teacher: teachers[index]
+            subject: item.subject,
+            teacher: teachers[index],
+            rotationDate: item.rotationDate,
+            room: item.room
         }));
 
         const result = await Timetable.findOneAndUpdate(
@@ -89,6 +92,9 @@ async function saveRoom(userId, day, rawText) {
 
         const scheduleData = timetable.schedule.map((item, index) => ({
             period: item.period,
+            subject: item.subject,
+            teacher: item.teacher,
+            rotationDate: item.rotationDate,
             room: rooms[index]
         }));
 
