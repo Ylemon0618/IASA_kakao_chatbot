@@ -263,7 +263,7 @@ router.post('/room', async (req, res) => {
 router.post('/rotation', async (req, res) => {
     const userId = req.body.userRequest.user.id;
     const day = req.body.action.params.day;
-    const period = req.body.action.params.period;
+    const period = parseInt(req.body.action.params.period[0]);
     const teacher = req.body.action.params.teacher;
 
     const saved = await saveRotation(userId, day, period, teacher);
