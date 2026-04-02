@@ -42,7 +42,7 @@ async function getSchedules(req, res, isTomorrow = false) {
             }
             if (scheduleDayIndex > 0 && scheduleDayIndex <= 5) temp.quickReplies = [
                     {label: "시간표 설정하기", action: "message", messageText: "시간표 등록하기"},
-                    {label: "1학년 시간표 가져오기", action: "block", blockId: "Set_schedule_1st"}
+                    {label: "1학년 시간표 가져오기", action: "message", messageText: "1학년 시간표 가져오기"}
                 ];
 
             return res.json({
