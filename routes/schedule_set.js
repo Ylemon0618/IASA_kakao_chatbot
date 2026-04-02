@@ -4,54 +4,50 @@ const Timetable = require('../models/Schedule');
 
 router.post('/', async (req, res) => {
     const userId = req.body.userRequest.user.id;
-    const grade = req.body.action.params.grade;
-    const cls = req.body.action.params.cls;
-    const semester = req.body.action.params.semester;
+    const { grade, cls, semester } = req.body.action.params;
 
-    const scheduleId = grade + cls + semester;
+    const scheduleId = grade + cls + semester; // 공용 시간표 ID (예: 111)
     const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
 
     try {
-        const timetables = days.map(async (item) => {
-            return Timetable.findOne({userId: scheduleId, day: item}).schedule;
-        });
+        // 1. 모든 요일의 데이터를 병렬로 가져옵니다.
+        const timetableDocs = await Promise.all(
+            days.map(day => Timetable.findOne({ userId: scheduleId, day: day }))
+        );
 
-        for (const [index, item] of timetables.entries()) {
-            await Timetable.findOneAndUpdate(
-                {
-                    userId: userId,
-                    day: days[index]
-                },
-                {
-                    $set: {
-                        schedule: item,
-                        updatedAt: new Date()
-                    }
-                },
-                {
-                    upsert: true,
-                    new: true
-                }
-            );
+        // 2. 루프를 돌며 유저 개인 시간표로 복사합니다.
+        for (let i = 0; i < days.length; i++) {
+            const sourceDoc = timetableDocs[i];
+
+            // 원본 데이터가 있을 때만 복사 진행
+            if (sourceDoc && sourceDoc.schedule) {
+                await Timetable.findOneAndUpdate(
+                    { userId: userId, day: days[i] },
+                    {
+                        $set: {
+                            schedule: sourceDoc.schedule,
+                            updatedAt: new Date()
+                        }
+                    },
+                    { upsert: true }
+                );
+            }
         }
 
         return res.json({
             version: "2.0",
             template: {
                 outputs: [{
-                    simpleText: {text: `📅 시간표가 성공적으로 설정되었습니다.`}
+                    simpleText: { text: `📅 ${grade}학년 ${cls}반 시간표가 성공적으로 설정되었습니다.` }
                 }]
             }
         });
+
     } catch (error) {
-        console.log(`An error occured while setting schedule: ${error}`);
+        console.error(`An error occurred while setting schedule: ${error}`);
         return res.json({
             version: "2.0",
-            template: {
-                outputs: [{
-                    simpleText: {text: `등록에 실패했습니다.`}
-                }]
-            }
+            template: { outputs: [{ simpleText: { text: `등록에 실패했습니다. (사유: ${error.message})` } }] }
         });
     }
 });
