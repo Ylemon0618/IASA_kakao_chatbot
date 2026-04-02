@@ -16,7 +16,7 @@ function getRotatedTeacher(teachers, startDate, offset = 0) {
     return teachers[teacherIndex];
 }
 
-async function getSchedules(req, res, isTomorrow = False) {
+async function getSchedules(req, res, isTomorrow = false) {
     try {
         const userId = req.body.userRequest.user.id;
 
@@ -30,7 +30,8 @@ async function getSchedules(req, res, isTomorrow = False) {
 
         if (!data || !data.schedule || data.schedule.length === 0) {
             let messageText = `📅 ${isTomorrow ? "내일" : "오늘"}(${scheduleDayKo})은 등록된 시간표가 없습니다.`;
-            if (scheduleDayIndex > 0 && scheduleDayIndex <= 5) messageText += `주중 시간표를 설정하려면 아래 버튼을 클릭 해 주세요.`;
+            if (scheduleDayIndex > 0 && scheduleDayIndex <= 5)
+                messageText += `\n직접 주중 시간표를 설정하려면 아래 버튼을 클릭 해 주세요.\n1학년이라면 오른쪽 버튼으로 빠르게 설정할 수 있습니다.`;
 
             let temp = {
                 outputs: [{
@@ -40,8 +41,9 @@ async function getSchedules(req, res, isTomorrow = False) {
                 }]
             }
             if (scheduleDayIndex > 0 && scheduleDayIndex <= 5) temp.quickReplies = [
-                {label: "시간표 설정하기", action: "message", messageText: "시간표 등록하기"}
-            ]
+                    {label: "시간표 설정하기", action: "message", messageText: "시간표 등록하기"},
+                    {label: "1학년 시간표 가져오기", action: "block", blockId: "Set_schedule_1st"}
+                ];
 
             return res.json({
                 version: "2.0",
