@@ -29,7 +29,7 @@ async function getSchedules(req, res, isTomorrow = False) {
         const data = await Timetable.findOne({userId: userId, day: scheduleDay});
 
         if (!data || !data.schedule || data.schedule.length === 0) {
-            let messageText = `📅 ${isTomorrow ? "내일" : "오늘"}(${scheduleDay})은 등록된 시간표가 없습니다.`;
+            let messageText = `📅 ${isTomorrow ? "내일" : "오늘"}(${scheduleDayKo})은 등록된 시간표가 없습니다.`;
             if (scheduleDayIndex > 0 && scheduleDayIndex <= 5) messageText += `주중 시간표를 설정하려면 아래 버튼을 클릭 해 주세요.`;
 
             let temp = {
