@@ -1,3 +1,4 @@
+require('dotenv').config();
 const axios = require('axios');
 const cheerio = require('cheerio');
 const qs = require('qs');
@@ -6,7 +7,6 @@ const {CookieJar} = require('tough-cookie');
 const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
-require('dotenv').config();
 
 const app = express();
 
@@ -97,7 +97,7 @@ async function startServer() {
             cachedData.lastFetch = todayStr;
         }
 
-        const isTomorrow = params && (params.date || params.date_input);
+        const isTomorrow = params && params.date;
         const data = isTomorrow ? cachedData.tomorrow : cachedData.today;
 
         if (!data || (data.breakfast.length === 0 && data.lunch.length === 0)) {
