@@ -26,7 +26,6 @@ app.use('/api/iasa/schedule/set', scheduleSetRouter);
 app.use('/api/iasa/schedule/initialize', scheduleInitRouter);
 
 const PORT = Number(process.env.PORT) || 25565;
-
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`server on ${PORT}`);
 });
