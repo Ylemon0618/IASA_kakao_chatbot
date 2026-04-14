@@ -5,10 +5,12 @@ const Timetable = require('../models/Schedule');
 router.post('/', async (req, res) => {
     const userId = req.body.userRequest.user.id;
     const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+    const {grade, cls, semester} = req.body.action.params;
+    const scheduleId = grade + cls + semester;
 
     try {
         const timetableDocs = await Promise.all(
-            days.map(day => Timetable.findOne({ userId: userId, day: day }))
+            days.map(day => Timetable.findOne({ userId: scheduleId, day: day }))
         );
 
         for (let i = 0; i < days.length; i++) {
