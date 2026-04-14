@@ -90,7 +90,6 @@ async function getSchedules(req, res, isTomorrow = false) {
 router.post('/day', async (req, res) => {
     const isTomorrow = req.body.action.params.isTomorrow === "true";
     const carouselItems = await getSchedules(req, res, isTomorrow);
-    console.log(carouselItems);
 
     if (!carouselItems) {
         return res.json({
