@@ -8,7 +8,7 @@ router.post('/', async (req, res) => {
 
     try {
         const timetableDocs = await Promise.all(
-            days.map(day => Timetable.findOne({ userId: scheduleId, day: day }))
+            days.map(day => Timetable.findOne({ userId: userId, day: day }))
         );
 
         for (let i = 0; i < days.length; i++) {
