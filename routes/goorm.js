@@ -8,7 +8,7 @@ router.post('/', async (req, res) => {
     try {
         const data = await Goorm.findOne({enabled: true});
         const problems = data.problems;
-        const number = req.body.action.params.number;
+        const number = parseInt(req.body.action.params.number);
 
         if (!problems) return res.json({
             version: "2.0",
@@ -36,8 +36,8 @@ router.post('/', async (req, res) => {
                                     title: `${number}번 문제 정답`,
                                     description: problem.code,
                                     buttons: [
-                                        {action: "message", label: `이전 문제 코드 보기`, messageText: `구름 ${number + 1}번 문제 코드 알려줘`},
-                                        {action: "message", label: `다음 문제 코드 보기`, messageText: `구름 ${number - 1}번 문제 코드 알려줘`}
+                                        {action: "message", label: `이전 문제 코드 보기`, messageText: `구름 ${number - 1}번 문제 코드 알려줘`},
+                                        {action: "message", label: `다음 문제 코드 보기`, messageText: `구름 ${number + 1}번 문제 코드 알려줘`}
                                     ]
                                 }
                             ]
