@@ -7,13 +7,15 @@ router.post('/', async (req, res) => {
 
     try {
         const data = await Goorm.findOne({enabled: true});
+        const problems = data.problems;
+        const number = req.body.action.params.number;
 
-        if (!data.problems) return res.json({
+        if (!problems) return res.json({
             version: "2.0",
             template: { outputs: [{ simpleText: { text: `아직 등록된 코드가 없습니다.` } }] }
         });
 
-        const problem = data.problems.find((element) => element.number === req.body.action.params.number);
+        const problem = problems[number - 1];
 
         if (!problem) return res.json({
             version: "2.0",
