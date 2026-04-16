@@ -4,7 +4,6 @@ const router = express.Router();
 
 router.post('/', async (req, res) => {
     const userId = req.body.userRequest.user.id;
-    const number = req.body.action.params.number;
 
     try {
         const data = await Goorm.findOne({enabled: true});
@@ -14,8 +13,7 @@ router.post('/', async (req, res) => {
             template: { outputs: [{ simpleText: { text: `아직 등록된 코드가 없습니다.` } }] }
         });
 
-        function getProblem(element) {return element.number === number}
-        const problem = data.problems.find(getProblem);
+        const problem = data.problems.find((element) => element.number === req.body.action.params.number);
 
         if (!problem) return res.json({
             version: "2.0",
