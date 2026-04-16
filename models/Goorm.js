@@ -6,14 +6,18 @@ const goormSchema = new mongoose.Schema({
         default: true,
         required: true
     },
-    number: {
-        type: Number,
-        required: true
-    },
-    code: {
-        type: String,
-        required: true
-    },
+    problems: [
+        {
+            number: {
+                type: Number,
+                required: true
+            },
+            code: {
+                type: String,
+                required: true
+            }
+        }
+    ],
     updatedAt: {
         type: Date,
         default: Date.now

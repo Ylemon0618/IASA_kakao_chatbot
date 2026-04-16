@@ -7,12 +7,20 @@ router.post('/', async (req, res) => {
     const number = req.body.action.params.number;
 
     try {
-        const data = await Goorm.findOne({enabled: true, number: number});
+        const data = await Goorm.findOne({enabled: true});
 
-        if (!data) return res.json({
+        if (!data.problems) return res.json({
             version: "2.0",
             template: { outputs: [{ simpleText: { text: `아직 등록된 코드가 없습니다.` } }] }
         });
+
+        function getProblem(element) {return element.number === number}
+        const problem = data.problems.find(getProblem);
+
+        if (!problem) return res.json({
+            version: "2.0",
+            template: { outputs: [{ simpleText: { text: `아직 등록된 코드가 없습니다.` } }] }
+        })
 
         console.log(`${userId} checked goorm code(${number})`)
 
@@ -26,7 +34,7 @@ router.post('/', async (req, res) => {
                             items: [
                                 {
                                     title: `${number}번 문제 정답`,
-                                    description: data.code,
+                                    description: problem.code,
                                     buttons: [
                                         {action: "message", label: `이전 문제 코드 보기`, messageText: `구름 ${number + 1}번 문제 코드 알려줘`},
                                         {action: "message", label: `다음 문제 코드 보기`, messageText: `구름 ${number - 1}번 문제 코드 알려줘`}
