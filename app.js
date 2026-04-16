@@ -18,12 +18,14 @@ const scheduleUploadRouter = require('./routes/schedule_upload');
 const scheduleSearchRouter = require('./routes/schedule_search');
 const scheduleSetRouter = require('./routes/schedule_set');
 const scheduleInitRouter = require('./routes/schedule_init');
+const goormInitRouter = require('./routes/goorm');
 
 app.use('/api/iasa/meal', mealRouter);
 app.use('/api/iasa/schedule/upload', scheduleUploadRouter);
 app.use('/api/iasa/schedule/search', scheduleSearchRouter);
 app.use('/api/iasa/schedule/set', scheduleSetRouter);
 app.use('/api/iasa/schedule/initialize', scheduleInitRouter);
+app.use('/api/iasa/goorm', goormInitRouter);
 
 const PORT = Number(process.env.PORT) || 25565;
 app.listen(PORT, '0.0.0.0', () => {
