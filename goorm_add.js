@@ -1,4 +1,12 @@
 const Goorm = require("./models/Goorm");
+require('dotenv').config();
+const mongoose = require('mongoose');
+
+console.log(`Connecting to MongoDB with URI: ${process.env.MONGO_URI}`);
+
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log('MongoDB Connected'))
+    .catch(err => console.log(err));
 
 return Goorm.insertOne(
     {
