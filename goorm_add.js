@@ -1,6 +1,6 @@
 const Goorm = require("./models/Goorm");
 
-return await Goorm.insertOne(
+return Goorm.insertOne(
     {
         enabled: true,
         problems: [
