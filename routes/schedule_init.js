@@ -1,8 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const Timetable = require('../models/Schedule');
+const saveLog = require('../utils/logger');
 
 router.post('/', async (req, res) => {
+    saveLog(req)
+
     const userId = req.body.userRequest.user.id;
 
     try {

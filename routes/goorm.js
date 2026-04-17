@@ -1,8 +1,11 @@
 const express = require('express');
 const Goorm = require("../models/Goorm");
 const router = express.Router();
+const saveLog = require('../utils/logger');
 
 router.post('/', async (req, res) => {
+    saveLog(req);
+
     const userId = req.body.userRequest.user.id;
 
     try {

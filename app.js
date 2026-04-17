@@ -30,4 +30,5 @@ app.use('/api/iasa/goorm', goormInitRouter);
 const PORT = Number(process.env.PORT) || 25565;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`server on ${PORT}`);
+    console.log(`-----------------------------------`);
 });

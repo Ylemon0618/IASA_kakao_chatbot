@@ -7,6 +7,7 @@ const {CookieJar} = require('tough-cookie');
 const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
+const saveLog = require('../utils/logger');
 
 const app = express();
 
@@ -78,42 +79,6 @@ async function getIasaMeal(userId, userPw, targetDate) {
     }
 }
 
-async function startServer() {
-    router.post('/search', async (req, res) => {
-        console.log("------- Kakao Request received (meal) -------");
-
-        const params = req.body.action.params;
-        const now = new Date();
-        const todayStr = now.toLocaleDateString();
-
-        if (cachedData.lastFetch !== todayStr) {
-            console.log("Data renewal...");
-            const tDate = new Date();
-            const tmrDate = new Date();
-            tmrDate.setDate(tmrDate.getDate() + 1);
-
-            cachedData.today = await getIasaMeal(process.env.RIRO_ID, process.env.RIRO_PW, tDate);
-            cachedData.tomorrow = await getIasaMeal(process.env.RIRO_ID, process.env.RIRO_PW, tmrDate);
-            cachedData.lastFetch = todayStr;
-        }
-
-        const isTomorrow = params && params.date;
-        const data = isTomorrow ? cachedData.tomorrow : cachedData.today;
-
-        if (!data || (data.breakfast.length === 0 && data.lunch.length === 0)) {
-            return res.json({
-                version: "2.0",
-                template: {outputs: [{simpleText: {text: "급식 정보를 불러올 수 없습니다."}}]}
-            });
-        }
-
-        const response = await makeResponse(data, isTomorrow);
-        return res.json(response);
-    });
-
-    module.exports = router;
-}
-
 function makeResponse(mealData, isTomorrow) {
     const dayLabel = isTomorrow ? "내일" : "오늘";
     const nextDayLabel = isTomorrow ? "오늘" : "내일";
@@ -158,4 +123,36 @@ function makeResponse(mealData, isTomorrow) {
     };
 }
 
-startServer();
+router.post('/search', async (req, res) => {
+    saveLog(req);
+
+    const params = req.body.action.params;
+    const now = new Date();
+    const todayStr = now.toLocaleDateString();
+
+    if (cachedData.lastFetch !== todayStr) {
+        console.log("Data renewal...");
+        const tDate = new Date();
+        const tmrDate = new Date();
+        tmrDate.setDate(tmrDate.getDate() + 1);
+
+        cachedData.today = await getIasaMeal(process.env.RIRO_ID, process.env.RIRO_PW, tDate);
+        cachedData.tomorrow = await getIasaMeal(process.env.RIRO_ID, process.env.RIRO_PW, tmrDate);
+        cachedData.lastFetch = todayStr;
+    }
+
+    const isTomorrow = params && params.date;
+    const data = isTomorrow ? cachedData.tomorrow : cachedData.today;
+
+    if (!data || (data.breakfast.length === 0 && data.lunch.length === 0)) {
+        return res.json({
+            version: "2.0",
+            template: {outputs: [{simpleText: {text: "급식 정보를 불러올 수 없습니다."}}]}
+        });
+    }
+
+    const response = await makeResponse(data, isTomorrow);
+    return res.json(response);
+});
+
+module.exports = router;

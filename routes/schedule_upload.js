@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Timetable = require('../models/Schedule');
+const saveLog = require('../utils/logger');
 
 async function saveTimetable(userId, day, rawText) {
     try {
@@ -152,6 +153,8 @@ async function saveRotation(userId, day, period, teacher) {
 }
 
 router.post('/name', async (req, res) => {
+    saveLog(req);
+
     const userId = req.body.userRequest.user.id;
     const mondaySchedule = req.body.action.params.monday;
     const tuesdaySchedule = req.body.action.params.tuesday;
@@ -187,6 +190,8 @@ router.post('/name', async (req, res) => {
 });
 
 router.post('/teacher', async (req, res) => {
+    saveLog(req);
+
     const userId = req.body.userRequest.user.id;
     const mondaySchedule = req.body.action.params.monday;
     const tuesdaySchedule = req.body.action.params.tuesday;
@@ -222,6 +227,8 @@ router.post('/teacher', async (req, res) => {
 });
 
 router.post('/room', async (req, res) => {
+    saveLog(req);
+
     const userId = req.body.userRequest.user.id;
     const mondaySchedule = req.body.action.params.monday;
     const tuesdaySchedule = req.body.action.params.tuesday;
@@ -257,6 +264,8 @@ router.post('/room', async (req, res) => {
 });
 
 router.post('/rotation', async (req, res) => {
+    saveLog(req);
+
     const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     const daysKo = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
 

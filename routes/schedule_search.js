@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Timetable = require('../models/Schedule');
+const saveLog = require('../utils/logger');
 
 function getRotatedTeacher(teachers, startDate, offset = 0) {
     if (!Array.isArray(teachers) || teachers.length <= 1) return teachers[0] || "미지정";
@@ -88,6 +89,8 @@ async function getSchedules(req, res, isTomorrow = false) {
 }
 
 router.post('/day', async (req, res) => {
+    saveLog(req);
+
     const isTomorrow = req.body.action.params.isTomorrow === "true";
     const carouselItems = await getSchedules(req, res, isTomorrow);
 
