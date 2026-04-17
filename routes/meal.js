@@ -8,6 +8,7 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 const saveLog = require('../utils/logger');
+const colors = require('../utils/colors');
 
 const app = express();
 
@@ -74,7 +75,7 @@ async function getIasaMeal(userId, userPw, targetDate) {
 
         return mealResult;
     } catch (error) {
-        console.error('Error on crawling:', error.message);
+        console.error(`${colors.red}[Error]${colors.reset} (meal.js): `, error.message);
         return null;
     }
 }
