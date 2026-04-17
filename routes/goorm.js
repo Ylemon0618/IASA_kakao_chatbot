@@ -31,13 +31,13 @@ router.post('/', async (req, res) => {
                     {
                         simpleText: {
                             text: `${number}번 문제 정답\n\n${problem.code}`
-                        },
-                        quickReplies: {
-                            {action: "message", label: `이전 문제 코드 보기`, messageText: `구름 ${number - 1}번 문제 코드 알려줘`},
-                            {action: "message", label: `다음 문제 코드 보기`, messageText: `구름 ${number + 1}번 문제 코드 알려줘`}
                         }
                     }
                 ],
+                quickReplies: {
+                    {action: "message", label: `이전 문제 코드 보기`, messageText: `구름 ${number - 1}번 문제 코드 알려줘`},
+                    {action: "message", label: `다음 문제 코드 보기`, messageText: `구름 ${number + 1}번 문제 코드 알려줘`}
+                }
             }
         });
     } catch (error) {
