@@ -12,14 +12,14 @@ router.post('/', async (req, res) => {
 
         if (!problems) return res.json({
             version: "2.0",
-            template: { outputs: [{ simpleText: { text: `아직 등록된 코드가 없습니다.` } }] }
+            template: {outputs: [{simpleText: {text: `아직 등록된 코드가 없습니다.`}}]}
         });
 
         const problem = problems[number - 1];
 
         if (!problem) return res.json({
             version: "2.0",
-            template: { outputs: [{ simpleText: { text: `아직 등록된 코드가 없습니다.` } }] }
+            template: {outputs: [{simpleText: {text: `아직 등록된 코드가 없습니다.`}}]}
         })
 
         console.log(`${userId} checked goorm code(${number})`)
@@ -27,13 +27,11 @@ router.post('/', async (req, res) => {
         return res.json({
             version: "2.0",
             template: {
-                outputs: [
-                    {
-                        simpleText: {
-                            text: `${number}번 문제 정답\n\n${problem.code}`
-                        }
+                outputs: [{
+                    simpleText: {
+                        text: `${number}번 문제 정답\n\n${problem.code}`
                     }
-                ],
+                }],
                 quickReplies: [
                     {action: "message", label: `이전 문제 코드 보기`, messageText: `구름 ${number - 1}번 문제 코드 알려줘`},
                     {action: "message", label: `다음 문제 코드 보기`, messageText: `구름 ${number + 1}번 문제 코드 알려줘`}
@@ -44,7 +42,7 @@ router.post('/', async (req, res) => {
         console.error(`An error occurred while getting goorm code: ${error}`);
         return res.json({
             version: "2.0",
-            template: { outputs: [{ simpleText: { text: `오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.` } }] }
+            template: {outputs: [{simpleText: {text: `오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.`}}]}
         });
     }
 });

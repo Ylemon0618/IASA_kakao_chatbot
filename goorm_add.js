@@ -64,7 +64,7 @@ for i in range(n, k + 1):
     if not i % 7: print('Buzz', end='')
     if i % 5 and i % 7: print(i, end='')
     print()`
-             },
+            },
             {
                 number: 7,
                 code: `n, turn = input().split()
@@ -140,7 +140,7 @@ for b in range(1, 101):
 
 if not res_cnt:
     print('없음')`
-             }
+            }
         ]
     },
     {
