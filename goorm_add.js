@@ -22,155 +22,228 @@ return Goorm.insertOne(
         problems: [
             {
                 number: 1,
-                code: `n, sqrt = int(input()), 0
-while sqrt ** 2 <= n:
-	sqrt += 0.001
-print(f"{sqrt - 0.001:.3f}")`
+                code: `print(open('data/test.txt').read())`
             },
             {
                 number: 2,
-                code: `n, cnt = int(input()), 0
-for x in range(-n, n + 1):
-	for y in range(-n, n + 1):
-		if x ** 2 + y ** 2 <= n ** 2:
-			cnt += 1
-print(cnt)
-print(f"{cnt / n ** 2:.4f}")`
+                code: `with open('test.txt', 'w') as f:
+f.write(input())
+with open('test.txt', 'r') as f:
+    print(f.read())`
             },
             {
                 number: 3,
-                code: `fibo = [0, 1]
-for i in range(int(input()) - 1):
-	fibo.append(fibo[-1] + fibo[-2])
-print(*fibo[1:])`
+                code: `n = int(input())
+with open('numbers.txt', 'w') as f:
+\tfor i in range(n):
+\t\tf.write(input() + '\\n')
+with open('numbers.txt', 'r') as f:
+\tnum = list(map(int, f.read().split('\\n')[:-1]))
+print(max(num))`
             },
             {
                 number: 4,
-                code: `fibo = [1, 1]
-for _ in range(int(input()) - 2):
-	fibo.append(fibo[-1] + fibo[-2])
-for i in range(len(fibo) - 1):
-	print(f"{fibo[i + 1] / fibo[i]:.6f}")`
+                code: `n = int(input())
+with open('scores.txt', 'w') as f:
+\tfor _ in range(n):
+\t\tf.write(input() + '\\n')
+with open('scores.txt', 'r') as f:
+\tarr = list(map(int, f.read().split('\\n')[:-1]))
+print(f"합계: {sum(arr)}")
+print(f"평균: {sum(arr) / n:.2f}")`
             },
             {
                 number: 5,
-                code: `t, r, target = map(int, input().split())
-level = 0
-while t > target:
-	level += 1
-	t = t * (1 - r / 100)
-	print(f"{t:.2f}", end=' ')
-print(f"\n{level}")`
+                code: `n = int(input())
+num = list(map(int, open("data/randomInt.txt").read().split()))
+cnt = 0
+for i in num:
+\tif i > n:
+\t\tcnt += 1
+print(cnt)`
             },
             {
                 number: 6,
-                code: `dic = {idx:len(idx) for idx in input().split()}
-for key, value in sorted(dic.items()):
-	print(key, value)`
+                code: `students = []
+for line in open('data/noseTouch.txt').readlines():
+\ta, b = line.split()
+\tstudents.append(int(b))
+n = int(input())
+res = 0
+for cnt in students:
+\tif cnt >= n:
+\t\tres += 1
+print(res)`
             },
             {
                 number: 7,
-                code: `arr = [input().split() for _ in range(int(input()))]
-dic = {i[0]:int(i[1]) for i in arr if int(i[1]) >= 80}
-if dic:
-	for key, value in sorted(dic.items()):
-		print(key, value)
-else:
-	print("없음")`
+                code: `i, j = map(int, input().split())
+                with open('data/numA.txt', 'r') as f:
+lines = f.read().split('\\n')
+a = int(lines[i - 1])
+with open('data/numB.txt', 'r') as f:
+    lines = f.read().split('\\n')
+b = int(lines[j - 1])
+print(a + b)`
             },
             {
                 number: 8,
-                code: `dic = dict(zip(input().split(), input().split()))
-for key, value in dic.items():
-	print(key, value)`
+                code: `n, m = map(int, input().split())
+with open('data/numbers.txt', 'r') as f:
+\tlines = list(map(int, f.read().split('\\n')[:-1]))
+print(sum(lines[n - 1:m]))`
             },
             {
                 number: 9,
-                code: `n = int(input())
-dic = {key:value for value, key in [input().split() for _ in range(n)]}
-for key, value in sorted(dic.items()):
-	print(key, value)`
+                code: `s, n = input(), int(input())
+print(*[s[i:i + n] for i in range(len(s) - n + 1)], sep='\\n')`
             },
             {
                 number: 10,
-                code: `arr = input().replace(' ', '')
-dic = {char:arr.count(char) for char in arr}
+                code: `s, n = input(), int(input())
+dic = {}
+for i in range(len(s) - n + 1):
+\tgram = s[i:i + n]
+\tdic[gram] = dic.get(gram, 0) + 1
 for key, value in sorted(dic.items()):
-	print(key, value)`
+\tprint(key, value)`
             },
             {
                 number: 11,
-                code: `print(*sorted(set(map(int, input().split()))))`
+                code: `s, n = input(), int(input())
+dic = {}
+for i in range(len(s) - n + 1):
+\tgram = s[i:i+n]
+\tdic[gram] = dic.get(gram, 0) + 1
+print(sorted(dic.items(), key=lambda x:(-x[1], x[0]))[0][0])`
             },
             {
                 number: 12,
-                code: `s1, s2 = set(input().split()), set(input().split())
-print(len(s1 & s2))
-print(*sorted(s1 & s2))`
+                code: `s, n = input().split(), int(input())
+grams = list(zip(*[s[i:] for i in range(n)]))
+print(*[' '.join(idx) for idx in grams], sep='\\n')`
             },
             {
                 number: 13,
-                code: `students, attendant = set(input().split()), set(input().split())
-not_attend = students - attendant
-print(len(not_attend))
-print(' '.join(sorted(not_attend)) if not_attend else "전원 참가")`
+                code: `a, b, n = input(), input(), int(input())
+grams_a = set(zip(*[a[i:] for i in range(n)]))
+grams_b = set(zip(*[b[i:] for i in range(n)]))
+both = sorted(list(grams_a & grams_b))
+if both:
+\tfor i in both:
+\t\tprint(*i, sep='')
+else:
+\tprint("NONE")`
             },
             {
                 number: 14,
-                code: `a, b = set(input().split()), set(input().split())
-print("YES" if a <= b else "NO")`
+                code: `def is_palindrome(word):
+\tfor i in range(len(word) // 2):
+\t\tif word[i] != word[-(i + 1)]:
+\t\t\treturn False
+\treturn True
+
+with open('data/words.txt', 'r') as f:
+\tarr = f.read().split('\\n')
+n, m = map(int, input().split())
+palin = [idx for idx in arr[n - 1:m] if is_palindrome(idx)]
+if palin:
+\tprint(*palin, sep='\\n')
+else:
+\tprint("NONE")`
             },
             {
                 number: 15,
-                code: `a, b = set(input().split()), set(input().split())
-print("YES" if a < b else "NO")`
+                code: `def solution(a, b):
+\treturn a + b`
             },
             {
                 number: 16,
-                code: `s1, s2, s3 = set(input().split()), set(input().split()), set(input().split())
-s4 = (s1 | s2) - s3
-print(len(s4))
-print(*sorted(s4) if s4 else '')`
+                code: `def solution(name):
+\tprint(f"안녕, {name}!")`
             },
             {
                 number: 17,
-                code: `s1, s2, s3 = set(input().split()), set(input().split()), set(input().split())
-s4 = (s1 ^ s2) & s3
-print(len(s4))
-print(*sorted(s4) if s4 else '')`
+                code: `def solution(lang):
+\tif lang == "Korean":
+\t\tprint("안녕하세요!")
+\telif lang == "English":
+\t\tprint("Hello!")
+\telif lang == "Japanese":
+\t\tprint("こんにちは!")
+\telse:
+\t\tprint("???")`
             },
             {
                 number: 18,
-                code: `s1, s2, s3 = set(input().split()), set(input().split()), set(input().split())
-s4 = ((s1 & s2) | (s2 & s3) | (s3 & s1)) - (s1 & s2 & s3)
-print(len(s4))
-print(*sorted(s4) if s4 else '')`
+                code: `def solution(n):
+\treturn (n // 2) * (n // 2 + 1)`
             },
             {
                 number: 19,
-                code: `s = [set(input().split()) for _ in range(5)]
-
-print(len(s[0] - (s[1] | s[2] | s[3] | s[4])))
-
-one, two = [], []
-for idx in s[0] | s[1] | s[2] | s[3] | s[4]:
-	cnt = 0
-	for i in range(5):
-		if idx in s[i]:
-			cnt += 1
-
-	if cnt == 1:
-		one.append(idx)
-	if cnt >= 2:
-		two.append(idx)
-
-print(*sorted(two))
-print(len(one))`
+                code: `def solution(a, b):
+\treturn a + b, a - b, a * b, a // b`
             },
+            {
+                number: 20,
+                code: `def solution(s):
+\treturn s[::-1]`
+            },
+            {
+                number: 21,
+                code: `def solution(n):
+\tfor i in range(n):
+\t\tprint('*' * (i * 2 + 1))`
+            },
+            {
+                number: 22,
+                code: `def is_prime(num):
+\tn = num
+\ti = 2
+\twhile n > 1:
+\t\tif i == num:
+\t\t\treturn True
+\t\telif i == n:
+\t\t\treturn False
+\t\t
+\t\tif n / i == n // i:
+\t\t\tn //= i
+\t\t\ti = 2
+\t\telse:
+\t\t\ti += 1
+
+def solution(a, b):
+\tans = 0
+\tfor i in range(a, b + 1):
+\t\tif is_prime(i):
+\t\t\tans += 1
+\treturn ans`
+            },
+            {
+                number: 23,
+                code: `menu = {
+\t"떡볶이": 4000,
+\t"순대": 3000,
+\t"튀김": 2500,
+\t"김밥": 3500,
+\t"라면": 4500,
+}
+
+def get_total(*prices):
+\treturn sum(prices)
+
+def get_discount(total, rate=10):
+\treturn int(total * (rate / 100))
+
+def print_receipt(name, discount_rate, order):
+\tprice = get_total(*[menu[key] * value for key, value in order.items()])
+\tdiscounted = get_discount(price, discount_rate)
+\tprint(f"손님: {name}")
+\tprint("---")
+\tprint(f"합계: {price}원")
+\tprint(f"할인({discount_rate}%): -{discounted}원")
+\tprint(f"최종: {price - discounted}원")`
+            }
         ]
-    },
-    {
-        upsert: true,
-        new: true
     }
 );
