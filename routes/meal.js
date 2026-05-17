@@ -8,7 +8,6 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 const { saveLog, printError } = require('../utils/logger');
-const colors = require('../utils/colors');
 
 const app = express();
 
