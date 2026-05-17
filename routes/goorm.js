@@ -4,7 +4,7 @@ const router = express.Router();
 const {saveLog, printError} = require('../utils/logger');
 
 router.post('/', async (req, res) => {
-    await saveLog(req);
+    saveLog(req);
 
     const userId = req.body.userRequest.user.id;
 
