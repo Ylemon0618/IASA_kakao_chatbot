@@ -1,10 +1,10 @@
 const express = require('express');
 const Goorm = require("../models/Goorm");
 const router = express.Router();
-const saveLog = require('../utils/logger');
+const {saveLog, printError} = require('../utils/logger');
 
 router.post('/', async (req, res) => {
-    saveLog(req);
+    await saveLog(req);
 
     const userId = req.body.userRequest.user.id;
 
@@ -32,7 +32,7 @@ router.post('/', async (req, res) => {
             template: {
                 outputs: [{
                     simpleText: {
-                        text: `${number}번 문제 정답\n\n${problem.code}`
+                        text: `${number}번 문제 정답\n\n\`\`\`${problem.code}\`\`\``
                     }
                 }],
                 quickReplies: [
@@ -42,11 +42,11 @@ router.post('/', async (req, res) => {
             }
         });
     } catch (error) {
-        console.error(`An error occurred while getting goorm code: ${error}`);
-        return res.json({
-            version: "2.0",
-            template: {outputs: [{simpleText: {text: `오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.`}}]}
-        });
+        return res.json(printError(
+            './routes/goorm',
+            'Error while printing goorm answer',
+            '오류가 발생했습니다.\n잠시 후에 다시 시도 해 주세요.'
+        ));
     }
 });
 
