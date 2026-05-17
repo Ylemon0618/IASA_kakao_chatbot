@@ -13,7 +13,7 @@ Goorm.findOneAndUpdate(
 	{
 		$set: { enabled: false }
 	},
-	{ upsert: false }
+	{ upsert: true }
 );
 
 return Goorm.insertOne(
