@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Timetable = require('../models/Schedule');
-const saveLog = require('../utils/logger');
+const { saveLog, printErorr, printError} = require('../utils/logger');
 
 function getRotatedTeacher(teachers, startDate, offset = 0) {
     if (!Array.isArray(teachers) || teachers.length <= 1) return teachers[0] || "미지정";
@@ -83,22 +83,22 @@ async function getSchedules(req, res, isTomorrow = false) {
             return items
         });
     } catch (error) {
-        console.error('error while searching schedule:', err);
-        return null;
+        return printError("./routes/schedule_search.js", "Error while searching schedule");
     }
 }
 
 router.post('/day', async (req, res) => {
-    saveLog(req);
+    await saveLog(req);
 
     const isTomorrow = req.body.action.params.isTomorrow === "true";
     const carouselItems = await getSchedules(req, res, isTomorrow);
 
     if (!carouselItems) {
-        return res.json({
-            version: "2.0",
-            template: {outputs: [{simpleText: {text: "시간표를 불러오는 중 서버 오류가 발생했습니다."}}]}
-        });
+        return res.json(printError(
+            './routes/schedule_search.js',
+            'Empty Carousel',
+            '시간표를 불러오는 중 서버 오류가 발생했습니다.\n잠시 후에 다시 시도 해 주세요.'
+        ));
     }
 
     return res.json({

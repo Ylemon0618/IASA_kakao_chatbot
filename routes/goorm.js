@@ -4,7 +4,7 @@ const router = express.Router();
 const {saveLog, printError} = require('../utils/logger');
 
 router.post('/', async (req, res) => {
-    saveLog(req);
+    await saveLog(req);
 
     const userId = req.body.userRequest.user.id;
 
@@ -43,7 +43,7 @@ router.post('/', async (req, res) => {
         });
     } catch (error) {
         return res.json(printError(
-            './routes/goorm',
+            './routes/goorm.js',
             'Error while printing goorm answer',
             '오류가 발생했습니다.\n잠시 후에 다시 시도 해 주세요.'
         ));

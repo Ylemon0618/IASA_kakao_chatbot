@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Timetable = require('../models/Schedule');
-const saveLog = require('../utils/logger');
+const { saveLog, printError } = require('../utils/logger');
 
 router.post('/', async (req, res) => {
-    saveLog(req);
+    await saveLog(req);
 
     const userId = req.body.userRequest.user.id;
     const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
@@ -43,11 +43,11 @@ router.post('/', async (req, res) => {
         });
 
     } catch (error) {
-        console.error(`An error occurred while setting schedule: ${error}`);
-        return res.json({
-            version: "2.0",
-            template: { outputs: [{ simpleText: { text: `등록에 실패했습니다. (사유: ${error.message})` } }] }
-        });
+        return res.json(printError(
+            './routes/schedule_set.js',
+            error,
+            '시간표 설정 도중 오류가 발생했습니다.\n잠시 후에 다시 시도 해 주세요.'
+        ));
     }
 });
 

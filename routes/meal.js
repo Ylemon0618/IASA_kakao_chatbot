@@ -7,7 +7,7 @@ const {CookieJar} = require('tough-cookie');
 const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
-const saveLog = require('../utils/logger');
+const { saveLog, printError } = require('../utils/logger');
 const colors = require('../utils/colors');
 
 const app = express();
@@ -75,8 +75,7 @@ async function getIasaMeal(userId, userPw, targetDate) {
 
         return mealResult;
     } catch (error) {
-        console.error(`${colors.red}[Error]${colors.reset} (meal.js): `, error.message);
-        return null;
+        return printError("./routes/meal.js", "Error while parsing meal");
     }
 }
 
@@ -125,7 +124,7 @@ function makeResponse(mealData, isTomorrow) {
 }
 
 router.post('/search', async (req, res) => {
-    saveLog(req);
+    await saveLog(req);
 
     const params = req.body.action.params;
     const now = new Date();

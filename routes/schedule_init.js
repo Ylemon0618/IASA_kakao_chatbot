@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Timetable = require('../models/Schedule');
-const saveLog = require('../utils/logger');
+const { saveLog, printError } = require('../utils/logger');
 
 router.post('/', async (req, res) => {
-    saveLog(req)
+    await saveLog(req)
 
     const userId = req.body.userRequest.user.id;
 
@@ -29,13 +29,11 @@ router.post('/', async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Reset Error:', error);
-        return res.json({
-            version: "2.0",
-            template: {
-                outputs: [{ simpleText: { text: "시간표 초기화 중 오류가 발생했습니다." } }]
-            }
-        });
+        return res.json(printError(
+            './routes/schedule_init.js',
+            'Error while initializing schedule',
+            '시간표 초기화 도중 오류가 발생했습니다.\n잠시 후에 다시 시도 해 주세요.'
+        ));
     }
 });
 

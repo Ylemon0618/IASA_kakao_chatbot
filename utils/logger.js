@@ -3,12 +3,12 @@ const colors = require('./colors');
 
 async function saveLog(req) {
     try {
-        const { userRequest, action } = req.body;
+        const {userRequest, action} = req.body;
         const userId = userRequest.user.id;
         const utterance = userRequest.utterance;
         const blockName = action.name;
         const params = JSON.stringify(action.params);
-        const time = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+        const time = new Date().toLocaleString('ko-KR', {timeZone: 'Asia/Seoul'});
 
         console.log(`\n${colors.cyan}[USER LOG]${colors.reset} ${time}`);
         console.log(`${colors.yellow}ID:${colors.reset} ${userId.substring(0, 10)}...`);
@@ -31,4 +31,24 @@ async function saveLog(req) {
     }
 }
 
-module.exports = saveLog;
+function printError(path, console, kakao) {
+    try {
+        console.error(`${colors.red}${path}${colors.reset}: ${console}`);
+
+        if (!kakao) {
+            return null;
+        }
+
+        return {
+            version: "2.0",
+            template: {outputs: [{simpleText: {text: kakao}}]}
+        };
+    } catch (err) {
+        console.error(`${colors.red}[LOG ERROR]${colors.reset}`, err.message);
+    }
+}
+
+module.exports = {
+    saveLog,
+    printError
+};

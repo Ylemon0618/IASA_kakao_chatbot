@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Timetable = require('../models/Schedule');
-const saveLog = require('../utils/logger');
+const { saveLog, printError } = require('../utils/logger');
 
 async function saveTimetable(userId, day, rawText) {
     try {
@@ -153,7 +153,7 @@ async function saveRotation(userId, day, period, teacher) {
 }
 
 router.post('/name', async (req, res) => {
-    saveLog(req);
+    await saveLog(req);
 
     const userId = req.body.userRequest.user.id;
     const mondaySchedule = req.body.action.params.monday;
@@ -178,19 +178,16 @@ router.post('/name', async (req, res) => {
             }
         });
     } else {
-        return res.json({
-            version: "2.0",
-            template: {
-                outputs: [{
-                    simpleText: {text: `등록에 실패했습니다.`}
-                }]
-            }
-        })
+        return res.json(printError(
+            './routes/schedule_upload.js',
+            'Error occurred while saving name',
+            '시간표 업로드 도중 오류가 발생했습니다.\n잠시 후에 다시 시도 해 주세요.'
+        ));
     }
 });
 
 router.post('/teacher', async (req, res) => {
-    saveLog(req);
+    await saveLog(req);
 
     const userId = req.body.userRequest.user.id;
     const mondaySchedule = req.body.action.params.monday;
@@ -215,19 +212,16 @@ router.post('/teacher', async (req, res) => {
             }
         });
     } else {
-        return res.json({
-            version: "2.0",
-            template: {
-                outputs: [{
-                    simpleText: {text: `등록에 실패했습니다.`}
-                }]
-            }
-        })
+        return res.json(printError(
+            './routes/schedule_upload.js',
+            'Error occurred while saving teacher',
+            '선생님 업로드 도중 오류가 발생했습니다.\n잠시 후에 다시 시도 해 주세요.'
+        ));
     }
 });
 
 router.post('/room', async (req, res) => {
-    saveLog(req);
+    await saveLog(req);
 
     const userId = req.body.userRequest.user.id;
     const mondaySchedule = req.body.action.params.monday;
@@ -252,19 +246,16 @@ router.post('/room', async (req, res) => {
             }
         });
     } else {
-        return res.json({
-            version: "2.0",
-            template: {
-                outputs: [{
-                    simpleText: {text: `등록에 실패했습니다.`}
-                }]
-            }
-        })
+        return res.json(printError(
+            './routes/schedule_upload.js',
+            'Error occurred while saving room',
+            '수업 장소 업로드 도중 오류가 발생했습니다.\n잠시 후에 다시 시도 해 주세요.'
+        ));
     }
 });
 
 router.post('/rotation', async (req, res) => {
-    saveLog(req);
+    await saveLog(req);
 
     const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     const daysKo = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
@@ -286,14 +277,11 @@ router.post('/rotation', async (req, res) => {
             }
         })
     } else {
-        return res.json({
-            version: "2.0",
-            template: {
-                outputs: [{
-                    simpleText: {text: `등록에 실패했습니다.\n선생님 성함이 맞는지 다시 한번 확인해 주세요.`}
-                }]
-            }
-        })
+        return res.json(printError(
+            './routes/schedule_upload.js',
+            'Error occurred while setting rotation',
+            '등록에 실패했습니다.\n선생님 성함이 맞는지 다시 한번 확인해 주세요.'
+        ));
     }
 });
 
