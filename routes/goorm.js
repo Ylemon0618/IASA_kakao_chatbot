@@ -32,7 +32,7 @@ router.post('/', async (req, res) => {
             template: {
                 outputs: [{
                     simpleText: {
-                        text: `${number}번 문제 정답\n\n\`\`\`${problem.code}\`\`\``
+                        text: `${number}번 문제 정답\n\n${problem.code}`
                     }
                 }],
                 quickReplies: [
