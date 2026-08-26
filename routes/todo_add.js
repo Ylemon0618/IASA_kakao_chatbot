@@ -15,7 +15,7 @@ router.post('/', async (req, res) => {
         return res.json({
             version: "2.0",
             template: {
-                outputs: [{ simpleText: { text: `${start_date} ${end_date}` } },]
+                outputs: [{simpleText: {text: `${start_date} ${end_date}`}},]
             }
         });
     } catch (error) {
