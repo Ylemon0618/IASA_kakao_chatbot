@@ -20,7 +20,6 @@ const todoSchema = new mongoose.Schema({
     },
     date: {
         type: Date,
-        required: false,
     },
     period: {
         start: {
@@ -29,7 +28,6 @@ const todoSchema = new mongoose.Schema({
         end: {
             type: Date,
         },
-        required: false,
     },
 
     title: {
@@ -38,11 +36,9 @@ const todoSchema = new mongoose.Schema({
     },
     explanation: {
         type: String,
-        required: false,
     },
     reflectionRatio: {
         type: Number,
-        required: false,
     },
 
     isMandatory: {
