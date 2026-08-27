@@ -33,6 +33,9 @@ const todoSchema = new mongoose.Schema({
             type: Date,
         },
     },
+    time: {
+        type: Date
+    },
 
     title: {
         type: String,
