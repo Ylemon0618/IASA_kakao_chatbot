@@ -18,6 +18,10 @@ const todoSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
     },
+    showTime: {
+        type: Boolean,
+        required: true,
+    },
     date: {
         type: Date,
     },
