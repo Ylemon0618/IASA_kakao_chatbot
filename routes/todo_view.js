@@ -80,14 +80,14 @@ router.post('/', asyncLogger(__filename, async (req, res, userId) => {
     const currentYear = new Date().getFullYear();
     const targetDate = new Date(currentYear, month - 1, day, 0, 0, 0, 0);
 
-    return res.json(await getTodos(res, req, targetDate));
+    return await makeResponse(res, req, targetDate);
 }));
 
 router.post('/today', asyncLogger(__filename, async (req, res, userId) => {
     const targetDate = new Date();
     targetDate.setHours(0, 0, 0, 0);
 
-    return res.json(await getTodos(res, req, targetDate));
+    return await makeResponse(res, req, targetDate);
 }));
 
 module.exports = router;
