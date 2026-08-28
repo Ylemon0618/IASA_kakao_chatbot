@@ -14,6 +14,7 @@ router.post('/', async (req, res) => {
         const currentYear = new Date().getFullYear();
         const date_now = new Date(currentYear, month - 1, day);
         date_now.setHours(0, 0, 0, 0);
+        console.log(month, day, currentYear, date_now);
 
         const shorts = await Todo.find({date: date_now})
         const shorts_title = shorts.map(item => item.title)
