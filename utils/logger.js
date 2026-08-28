@@ -79,7 +79,7 @@ const asyncLogger = (filePath, fn) => {
                 const errorResponse = await printError(
                     filePath,
                     `Error on ${filePath}: ${error.message}`,
-                    '오류가 발생했습니다.\n잠시 후에 다시 시도 해 주세요.'
+                    '오류가 발생했습니다.\n잠시 후에 다시 시도 해 주세요.\n오류가 지속될 경우 관리자에게 문의 해 주세요.'
                 );
                 return res.json(errorResponse);
             } else {
