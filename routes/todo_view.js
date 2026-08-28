@@ -13,10 +13,8 @@ router.post('/', async (req, res) => {
         const day = parseInt(req.body.action.params.day);
         const currentYear = new Date().getFullYear();
         const search_date = new Date(currentYear, month - 1, day, 0, 0, 0, 0);
-        console.log(month, day, currentYear, search_date);
 
         const shorts = await Todo.find({date: search_date})
-        console.log(shorts)
         const shorts_title = shorts.map(item => item.title)
 
         return res.json({
