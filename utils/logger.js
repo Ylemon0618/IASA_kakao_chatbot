@@ -31,9 +31,9 @@ async function saveLog(req) {
     }
 }
 
-function printError(path, console, kakao) {
+function printError(path, errorMsg, kakao) {
     try {
-        console.error(`${colors.red}${path}${colors.reset}: ${console}`);
+        console.error(`${colors.red}${path}${colors.reset}: ${errorMsg}`);
 
         if (!kakao) {
             return null;
