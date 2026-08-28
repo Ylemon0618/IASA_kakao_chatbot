@@ -85,6 +85,7 @@ const getSchedules = asyncLogger(__filename, async (req, res, userId) => {
 
 router.post('/day', asyncLogger(__filename, async (req, res, userId) => {
     const isTomorrow = req.body.action.params.isTomorrow === "true";
+    const replyDate = isTomorrow ? "오늘" : "내일";
     const carouselItems = await getSchedules(req, res, isTomorrow);
 
     if (!carouselItems) {
@@ -107,8 +108,8 @@ router.post('/day', asyncLogger(__filename, async (req, res, userId) => {
                 }
             ],
             quickReplies: [
-                {label: "오늘 시간표 보기", action: "message", messageText: "오늘 시간표 알려줘"},
-                {label: "급식 확인하기", action: "message", messageText: "내일 급식 뭐야"}
+                {label: `${replyDate} 시간표 보기`, action: "message", messageText: `${replyDate} 시간표 알려줘`},
+                {label: "오늘 급식 확인하기", action: "message", messageText: "오늘 급식 알려줘"}
             ]
         }
     });
