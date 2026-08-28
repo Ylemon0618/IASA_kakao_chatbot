@@ -1,4 +1,4 @@
-const Todo = require('./models/Todo'); // 스키마 경로 확인
+const Todo = require('./models/Todo');
 
 async function createTodo(inputData) {
     try {
