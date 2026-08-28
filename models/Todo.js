@@ -34,7 +34,12 @@ const todoSchema = new mongoose.Schema({
         },
     },
     time: {
-        type: Date
+        hour: {
+            type: Number
+        },
+        minute: {
+            type: Number
+        }
     },
 
     title: {
