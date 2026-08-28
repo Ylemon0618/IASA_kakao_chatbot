@@ -2,15 +2,18 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const colors = require('./utils/colors');
 const app = express();
+
+console.log(`${colors.blue}-----------------------------------${colors.reset}`);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-console.log(`Connecting to MongoDB with URI: ${process.env.MONGO_URI}`);
+console.log(`${colors.yellow}Connecting to MongoDB...${colors.reset}`);
 
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('MongoDB Connected'))
+    .then(() => console.log(`${colors.green}MongoDB Connected${colors.reset}`))
     .catch(err => console.log(err));
 
 const mealRouter = require('./routes/meal');
@@ -33,6 +36,6 @@ app.use('/api/iasa/todo/view', todoViewRouter);
 
 const PORT = Number(process.env.PORT) || 25565;
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`server on ${PORT}`);
-    console.log(`-----------------------------------`);
+    console.log(`${colors.white}server on ${PORT}${colors.reset}`);
+    console.log(`${colors.blue}-----------------------------------${colors.reset}`);
 });
