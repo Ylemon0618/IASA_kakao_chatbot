@@ -5,16 +5,12 @@ const mongoose = require('mongoose');
 const colors = require('./utils/colors');
 const app = express();
 
-console.log(`${colors.blue}-----------------------------------${colors.reset}`);
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-console.log(`${colors.yellow}Connecting to MongoDB...${colors.reset}`);
-
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log(`${colors.green}MongoDB Connected${colors.reset}`))
-    .catch(err => console.log(err));
+    .catch(err => console.log(`${colors.red}MongoDB Connection Error:${colors.reset}`, err.message));
 
 const mealRouter = require('./routes/meal');
 const scheduleUploadRouter = require('./routes/schedule_upload');
@@ -36,6 +32,7 @@ app.use('/api/iasa/todo/view', todoViewRouter);
 
 const PORT = Number(process.env.PORT) || 25565;
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`${colors.white}server on ${PORT}${colors.reset}`);
+    console.log(`${colors.blue}-----------------------------------${colors.reset}`);
+    console.log(`${colors.white}Server running on port ${PORT}${colors.reset}`);
     console.log(`${colors.blue}-----------------------------------${colors.reset}`);
 });
