@@ -7,7 +7,7 @@ const {CookieJar} = require('tough-cookie');
 const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
-const { saveLog, printError } = require('../utils/logger');
+const {saveLog, printError, asyncLogger} = require('../utils/logger');
 
 const app = express();
 
@@ -32,51 +32,47 @@ function buildRiroUrl(date) {
     return `${MEAL_URL}?db=${dbCode}&action=day&year=${year}&month=${month}&day=${day}`;
 }
 
-async function getIasaMeal(userId, userPw, targetDate) {
-    try {
-        const loginPayload = qs.stringify({
-            'app': 'user', 'mode': 'login', 'userType': 1, 'id': userId, 'pw': userPw
+const getIasaMeal = asyncLogger(__filename, async (userId, userPw, targetDate) => {
+    const loginPayload = qs.stringify({
+        'app': 'user', 'mode': 'login', 'userType': 1, 'id': userId, 'pw': userPw
+    });
+
+    await client.post(LOGIN_URL, loginPayload, {
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'User-Agent': 'Mozilla/5.0',
+            'Referer': BASE_URL
+        }
+    });
+
+    const requestUrl = buildRiroUrl(targetDate);
+    console.log(`URL 요청: ${requestUrl}`);
+
+    const mealRes = await client.get(requestUrl);
+    const $ = cheerio.load(mealRes.data);
+    const mealResult = {breakfast: [], lunch: [], dinner: []};
+
+    $('.meal_day_list').each((_, element) => {
+        const title = $(element).find('.title').text().trim();
+        const menuContainer = $(element).find('.meal_day_popup_btn');
+        const menuItems = [];
+
+        menuContainer.find('p').each((__, p) => {
+            $(p).find('span').remove();
+            let item = $(p).text().trim()
+                .replace(/[0-9.]+(?=$)/g, '')
+                .replace(/_$/g, '')
+                .trim();
+
+            if (item && item !== '자율') menuItems.push(item);
         });
+        if (title.includes('조식')) mealResult.breakfast = menuItems;
+        else if (title.includes('중식')) mealResult.lunch = menuItems;
+        else if (title.includes('석식')) mealResult.dinner = menuItems;
+    });
 
-        await client.post(LOGIN_URL, loginPayload, {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'User-Agent': 'Mozilla/5.0',
-                'Referer': BASE_URL
-            }
-        });
-
-        const requestUrl = buildRiroUrl(targetDate);
-        console.log(`URL 요청: ${requestUrl}`);
-
-        const mealRes = await client.get(requestUrl);
-        const $ = cheerio.load(mealRes.data);
-        const mealResult = {breakfast: [], lunch: [], dinner: []};
-
-        $('.meal_day_list').each((_, element) => {
-            const title = $(element).find('.title').text().trim();
-            const menuContainer = $(element).find('.meal_day_popup_btn');
-            const menuItems = [];
-
-            menuContainer.find('p').each((__, p) => {
-                $(p).find('span').remove();
-                let item = $(p).text().trim()
-                    .replace(/[0-9.]+(?=$)/g, '')
-                    .replace(/_$/g, '')
-                    .trim();
-
-                if (item && item !== '자율') menuItems.push(item);
-            });
-            if (title.includes('조식')) mealResult.breakfast = menuItems;
-            else if (title.includes('중식')) mealResult.lunch = menuItems;
-            else if (title.includes('석식')) mealResult.dinner = menuItems;
-        });
-
-        return mealResult;
-    } catch (error) {
-        return printError("./routes/meal.js", "Error while parsing meal");
-    }
-}
+    return mealResult;
+});
 
 function makeResponse(mealData, isTomorrow) {
     const dayLabel = isTomorrow ? "내일" : "오늘";
@@ -98,7 +94,11 @@ function makeResponse(mealData, isTomorrow) {
                             title: `🌅 ${dayLabel} 조식`,
                             description: formatMenuText(mealData.breakfast),
                             buttons: [
-                                {action: "message", label: `${nextDayLabel} 급식 보기`, messageText: `${nextDayLabel} 급식 알려줘`}
+                                {
+                                    action: "message",
+                                    label: `${nextDayLabel} 급식 보기`,
+                                    messageText: `${nextDayLabel} 급식 알려줘`
+                                }
                             ]
                         },
                         {
@@ -122,9 +122,7 @@ function makeResponse(mealData, isTomorrow) {
     };
 }
 
-router.post('/search', async (req, res) => {
-    await saveLog(req);
-
+router.post('/search', asyncLogger(__filename, async (req, res, userId) => {
     const params = req.body.action.params;
     const now = new Date();
     const todayStr = now.toLocaleDateString();
@@ -152,6 +150,6 @@ router.post('/search', async (req, res) => {
 
     const response = await makeResponse(data, isTomorrow);
     return res.json(response);
-});
+}));
 
 module.exports = router;

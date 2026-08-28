@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Timetable = require('../models/Schedule');
-const { saveLog, printErorr, printError} = require('../utils/logger');
+const {saveLog, printError, asyncLogger} = require('../utils/logger');
 
 function getRotatedTeacher(teachers, startDate, offset = 0) {
     if (!Array.isArray(teachers) || teachers.length <= 1) return teachers[0] || "미지정";
@@ -17,79 +17,73 @@ function getRotatedTeacher(teachers, startDate, offset = 0) {
     return teachers[teacherIndex];
 }
 
-async function getSchedules(req, res, isTomorrow = false) {
-    try {
-        const userId = req.body.userRequest.user.id;
+const getSchedules = asyncLogger(__filename, async (req, res, userId) => {
+    const isTomorrow = false
 
-        const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-        const daysKo = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
-        const scheduleDayIndex = (isTomorrow ? new Date().getDay() + 1 : new Date().getDay()) % 7;
-        const scheduleDay = days[scheduleDayIndex];
-        const scheduleDayKo = daysKo[scheduleDayIndex];
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const daysKo = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+    const scheduleDayIndex = (isTomorrow ? new Date().getDay() + 1 : new Date().getDay()) % 7;
+    const scheduleDay = days[scheduleDayIndex];
+    const scheduleDayKo = daysKo[scheduleDayIndex];
 
-        const data = await Timetable.findOne({userId: userId, day: scheduleDay});
+    const data = await Timetable.findOne({userId: userId, day: scheduleDay});
 
-        if (!data || !data.schedule || data.schedule.length === 0) {
-            let messageText = `📅 ${isTomorrow ? "내일" : "오늘"}(${scheduleDayKo})은 등록된 시간표가 없습니다.`;
-            if (scheduleDayIndex > 0 && scheduleDayIndex <= 5)
-                messageText += `\n직접 주중 시간표를 설정하려면 아래 버튼을 클릭 해 주세요.\n1학년이라면 오른쪽 버튼으로 빠르게 설정할 수 있습니다.`;
+    if (!data || !data.schedule || data.schedule.length === 0) {
+        let messageText = `📅 ${isTomorrow ? "내일" : "오늘"}(${scheduleDayKo})은 등록된 시간표가 없습니다.`;
+        if (scheduleDayIndex > 0 && scheduleDayIndex <= 5)
+            messageText += `\n직접 주중 시간표를 설정하려면 아래 버튼을 클릭 해 주세요.\n1학년이라면 오른쪽 버튼으로 빠르게 설정할 수 있습니다.`;
 
-            let temp = {
-                outputs: [{
-                    simpleText: {
-                        text: messageText
-                    }
-                }]
-            }
-            if (scheduleDayIndex > 0 && scheduleDayIndex <= 5) temp.quickReplies = [
-                    {label: "시간표 설정하기", action: "message", messageText: "시간표 등록하기"},
-                    {label: "1학년 시간표 가져오기", action: "message", messageText: "1학년 시간표 가져오기"}
-                ];
+        let temp = {
+            outputs: [{
+                simpleText: {
+                    text: messageText
+                }
+            }]
+        }
+        if (scheduleDayIndex > 0 && scheduleDayIndex <= 5) temp.quickReplies = [
+            {label: "시간표 설정하기", action: "message", messageText: "시간표 등록하기"},
+            {label: "1학년 시간표 가져오기", action: "message", messageText: "1학년 시간표 가져오기"}
+        ];
 
-            return res.json({
-                version: "2.0",
-                template: temp
-            });
+        return res.json({
+            version: "2.0",
+            template: temp
+        });
+    }
+
+    return data.schedule.slice(0, 9).map((item) => {
+        const teacher = getRotatedTeacher(item.teacher, item.rotationDate);
+
+        let items = {
+            imageTitle: {
+                title: `${item.period}교시: ${item.subject}`,
+                description: `IASA Schedule`,
+            },
+            itemList: [
+                {
+                    title: "담당 교사",
+                    description: teacher || `${item.teacher.join('/')}`
+                },
+                {title: "수업 장소", description: item.room || "미지정"}
+            ],
+        };
+
+        if (!teacher) {
+            items.description = "현재 주차의 담당 교사를 지정하려면 아래 버튼을 클릭 해 주세요."
+            items.buttons = [
+                {
+                    action: "message",
+                    label: `이번주 담당 교사 지정하기`,
+                    messageText: `${scheduleDayKo} ${item.period}교시 담당 교사 지정해줘`
+                }
+            ]
         }
 
-        return data.schedule.slice(0, 9).map((item) => {
-            const teacher = getRotatedTeacher(item.teacher, item.rotationDate);
+        return items
+    });
+});
 
-            let items = {
-                imageTitle: {
-                    title: `${item.period}교시: ${item.subject}`,
-                    description: `IASA Schedule`,
-                },
-                itemList: [
-                    {
-                        title: "담당 교사",
-                        description: teacher || `${item.teacher.join('/')}`
-                    },
-                    {title: "수업 장소", description: item.room || "미지정"}
-                ],
-            };
-
-            if (!teacher) {
-                items.description = "현재 주차의 담당 교사를 지정하려면 아래 버튼을 클릭 해 주세요."
-                items.buttons = [
-                    {
-                        action: "message",
-                        label: `이번주 담당 교사 지정하기`,
-                        messageText: `${scheduleDayKo} ${item.period}교시 담당 교사 지정해줘`
-                    }
-                ]
-            }
-
-            return items
-        });
-    } catch (error) {
-        return printError("./routes/schedule_search.js", "Error while searching schedule");
-    }
-}
-
-router.post('/day', async (req, res) => {
-    await saveLog(req);
-
+router.post('/day', asyncLogger(__filename, async (req, res, userId) => {
     const isTomorrow = req.body.action.params.isTomorrow === "true";
     const carouselItems = await getSchedules(req, res, isTomorrow);
 
@@ -118,6 +112,6 @@ router.post('/day', async (req, res) => {
             ]
         }
     });
-});
+}));
 
 module.exports = router;

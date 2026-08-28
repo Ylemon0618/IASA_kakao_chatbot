@@ -1,40 +1,28 @@
 const express = require('express');
 const router = express.Router();
 const Timetable = require('../models/Schedule');
-const { saveLog, printError } = require('../utils/logger');
+const {saveLog, printError, asyncLogger} = require('../utils/logger');
 
-router.post('/', async (req, res) => {
-    await saveLog(req)
+router.post('/', asyncLogger(__filename, async (req, res) => {
+    const result = await Timetable.deleteMany({userId: userId});
 
-    const userId = req.body.userRequest.user.id;
-
-    try {
-        const result = await Timetable.deleteMany({ userId: userId });
-
-        if (result.deletedCount === 0) {
-            return res.json({
-                version: "2.0",
-                template: {
-                    outputs: [{ simpleText: { text: "이미 등록된 시간표가 없거나 삭제할 데이터가 없습니다." } }]
-                }
-            });
-        }
-
+    if (result.deletedCount === 0) {
         return res.json({
             version: "2.0",
             template: {
-                outputs: [{
-                    simpleText: { text: `🗑️ 모든 시간표 데이터가 초기화되었습니다.\n(총 ${result.deletedCount}개의 요일 데이터 삭제)` }
-                }]
+                outputs: [{simpleText: {text: "이미 등록된 시간표가 없거나 삭제할 데이터가 없습니다."}}]
             }
         });
-    } catch (error) {
-        return res.json(printError(
-            './routes/schedule_init.js',
-            'Error while initializing schedule',
-            '시간표 초기화 도중 오류가 발생했습니다.\n잠시 후에 다시 시도 해 주세요.'
-        ));
     }
-});
+
+    return res.json({
+        version: "2.0",
+        template: {
+            outputs: [{
+                simpleText: {text: `🗑️ 모든 시간표 데이터가 초기화되었습니다.\n(총 ${result.deletedCount}개의 요일 데이터 삭제)`}
+            }]
+        }
+    });
+}));
 
 module.exports = router;

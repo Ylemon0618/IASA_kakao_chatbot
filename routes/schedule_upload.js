@@ -1,161 +1,138 @@
 const express = require('express');
 const router = express.Router();
 const Timetable = require('../models/Schedule');
-const { saveLog, printError } = require('../utils/logger');
+const {saveLog, printError, asyncLogger} = require('../utils/logger');
 
-async function saveTimetable(userId, day, rawText) {
-    try {
-        const subjects = rawText.split(' ')
-            .map(item => item.trim())
-            .filter(item => item.length > 0);
+const saveTimetable = asyncLogger(__filename, async (userId, day, rawText) => {
+    const subjects = rawText.split(' ')
+        .map(item => item.trim())
+        .filter(item => item.length > 0);
 
-        const scheduleData = subjects.map((subject, index) => ({
-            period: index + 1,
-            subject: subject
-        }));
+    const scheduleData = subjects.map((subject, index) => ({
+        period: index + 1,
+        subject: subject
+    }));
 
-        return await Timetable.findOneAndUpdate(
-            {
-                userId: userId,
-                day: day
-            },
-            {
-                $set: {
-                    schedule: scheduleData,
-                    updatedAt: new Date()
-                }
-            },
-            {
-                upsert: true,
-                new: true
+    return Timetable.findOneAndUpdate(
+        {
+            userId: userId,
+            day: day
+        },
+        {
+            $set: {
+                schedule: scheduleData,
+                updatedAt: new Date()
             }
-        );
-    } catch (error) {
-        console.error('Error on ./routes/schdule.js while saving schedule:', error.message);
-        return null;
-    }
-}
+        },
+        {
+            upsert: true,
+            new: true
+        }
+    );
+});
 
-async function saveTeacher(userId, day, rawText) {
-    try {
-        const timetable = await Timetable.findOne({userId: userId, day: day})
+const saveTeacher = asyncLogger(__filename, async (userId, day, rawText) => {
+    const timetable = await Timetable.findOne({userId: userId, day: day})
 
-        const teachers = rawText.split(' ')
-            .map(item => item.trim())
-            .map(item => item.split('/'))
-            .filter(item => item.length > 0);
+    const teachers = rawText.split(' ')
+        .map(item => item.trim())
+        .map(item => item.split('/'))
+        .filter(item => item.length > 0);
 
-        const scheduleData = timetable.schedule.map((item, index) => ({
-            period: item.period,
-            subject: item.subject,
-            teacher: teachers[index],
-            rotationDate: item.rotationDate,
-            room: item.room
-        }));
+    const scheduleData = timetable.schedule.map((item, index) => ({
+        period: item.period,
+        subject: item.subject,
+        teacher: teachers[index],
+        rotationDate: item.rotationDate,
+        room: item.room
+    }));
 
-        return await Timetable.findOneAndUpdate(
-            {
-                userId: userId,
-                day: day
-            },
-            {
-                $set: {
-                    schedule: scheduleData,
-                    updatedAt: new Date()
-                }
-            },
-            {
-                upsert: true,
-                new: true
+    return Timetable.findOneAndUpdate(
+        {
+            userId: userId,
+            day: day
+        },
+        {
+            $set: {
+                schedule: scheduleData,
+                updatedAt: new Date()
             }
-        );
-    } catch (error) {
-        console.error('Error on ./routes/schdule.js while saving teacher:', error.message);
-        return null;
-    }
-}
+        },
+        {
+            upsert: true,
+            new: true
+        }
+    );
+});
 
-async function saveRoom(userId, day, rawText) {
-    try {
-        const timetable = await Timetable.findOne({userId: userId, day: day})
+const saveRoom = asyncLogger(__filename, async (userId, day, rawText) => {
+    const timetable = await Timetable.findOne({userId: userId, day: day})
 
-        const rooms = rawText.split(' ')
-            .map(item => item.trim())
-            .filter(item => item.length > 0);
+    const rooms = rawText.split(' ')
+        .map(item => item.trim())
+        .filter(item => item.length > 0);
 
-        const scheduleData = timetable.schedule.map((item, index) => ({
-            period: item.period,
-            subject: item.subject,
-            teacher: item.teacher,
-            rotationDate: item.rotationDate,
-            room: rooms[index]
-        }));
+    const scheduleData = timetable.schedule.map((item, index) => ({
+        period: item.period,
+        subject: item.subject,
+        teacher: item.teacher,
+        rotationDate: item.rotationDate,
+        room: rooms[index]
+    }));
 
-        return await Timetable.findOneAndUpdate(
-            {
-                userId: userId,
-                day: day
-            },
-            {
-                $set: {
-                    schedule: scheduleData,
-                    updatedAt: new Date()
-                }
-            },
-            {
-                upsert: true,
-                new: true
+    return Timetable.findOneAndUpdate(
+        {
+            userId: userId,
+            day: day
+        },
+        {
+            $set: {
+                schedule: scheduleData,
+                updatedAt: new Date()
             }
-        );
-    } catch (error) {
-        console.error('Error on ./routes/schdule.js while saving room:', error.message);
-        return null;
-    }
-}
+        },
+        {
+            upsert: true,
+            new: true
+        }
+    );
+});
 
-async function saveRotation(userId, day, period, teacher) {
-    try {
-        const timetable = await Timetable.findOne({userId: userId, day: day})
-        const teachers = timetable.schedule[period - 1].teacher;
+const saveRotation = asyncLogger(__filename, async (userId, day, period, teacher) => {
+    const timetable = await Timetable.findOne({userId: userId, day: day})
+    const teachers = timetable.schedule[period - 1].teacher;
 
-        if (!teachers.includes(teacher)) return null;
+    if (!teachers.includes(teacher)) return null;
 
-        const teacherIndex = teachers.indexOf(teacher);
+    const teacherIndex = teachers.indexOf(teacher);
 
-        const now = new Date();
-        const date = new Date();
-        date.setDate(now.getDate() - 7 * teacherIndex - 1);
-        date.setHours(0, 0, 0, 0);
+    const now = new Date();
+    const date = new Date();
+    date.setDate(now.getDate() - 7 * teacherIndex - 1);
+    date.setHours(0, 0, 0, 0);
 
-        let scheduleData = timetable.schedule;
-        scheduleData[period - 1].rotationDate = date;
+    let scheduleData = timetable.schedule;
+    scheduleData[period - 1].rotationDate = date;
 
-        return await Timetable.findOneAndUpdate(
-            {
-                userId: userId,
-                day: day
-            },
-            {
-                $set: {
-                    schedule: scheduleData,
-                    updatedAt: new Date()
-                }
-            },
-            {
-                upsert: true,
-                new: true
+    return Timetable.findOneAndUpdate(
+        {
+            userId: userId,
+            day: day
+        },
+        {
+            $set: {
+                schedule: scheduleData,
+                updatedAt: new Date()
             }
-        );
-    } catch (error) {
-        console.error('Error on ./routes/schdule.js while saving rotation:', error.message);
-        return null;
-    }
-}
+        },
+        {
+            upsert: true,
+            new: true
+        }
+    );
+});
 
-router.post('/name', async (req, res) => {
-    await saveLog(req);
-
-    const userId = req.body.userRequest.user.id;
+router.post('/name', asyncLogger(__filename, async (req, res, userId) => {
     const mondaySchedule = req.body.action.params.monday;
     const tuesdaySchedule = req.body.action.params.tuesday;
     const wednesdaySchedule = req.body.action.params.wednesday;
@@ -178,18 +155,15 @@ router.post('/name', async (req, res) => {
             }
         });
     } else {
-        return res.json(printError(
-            './routes/schedule_upload.js',
-            'Error occurred while saving name',
-            '시간표 업로드 도중 오류가 발생했습니다.\n잠시 후에 다시 시도 해 주세요.'
-        ));
+        return printError(
+            __filename,
+            `Error on ${__filename}: while saving name`,
+            '오류가 발생했습니다.\n잠시 후에 다시 시도 해 주세요.'
+        )
     }
-});
+}));
 
-router.post('/teacher', async (req, res) => {
-    await saveLog(req);
-
-    const userId = req.body.userRequest.user.id;
+router.post('/teacher', asyncLogger(__filename, async (req, res, userId) => {
     const mondaySchedule = req.body.action.params.monday;
     const tuesdaySchedule = req.body.action.params.tuesday;
     const wednesdaySchedule = req.body.action.params.wednesday;
@@ -212,18 +186,15 @@ router.post('/teacher', async (req, res) => {
             }
         });
     } else {
-        return res.json(printError(
-            './routes/schedule_upload.js',
-            'Error occurred while saving teacher',
-            '선생님 업로드 도중 오류가 발생했습니다.\n잠시 후에 다시 시도 해 주세요.'
-        ));
+        return printError(
+            __filename,
+            `Error on ${__filename}: while saving teacher`,
+            '오류가 발생했습니다.\n잠시 후에 다시 시도 해 주세요.'
+        )
     }
-});
+}));
 
-router.post('/room', async (req, res) => {
-    await saveLog(req);
-
-    const userId = req.body.userRequest.user.id;
+router.post('/room', asyncLogger(__filename, async (req, res, userId) => {
     const mondaySchedule = req.body.action.params.monday;
     const tuesdaySchedule = req.body.action.params.tuesday;
     const wednesdaySchedule = req.body.action.params.wednesday;
@@ -246,21 +217,18 @@ router.post('/room', async (req, res) => {
             }
         });
     } else {
-        return res.json(printError(
-            './routes/schedule_upload.js',
-            'Error occurred while saving room',
-            '수업 장소 업로드 도중 오류가 발생했습니다.\n잠시 후에 다시 시도 해 주세요.'
-        ));
+        return printError(
+            __filename,
+            `Error on ${__filename}: while saving room`,
+            '오류가 발생했습니다.\n잠시 후에 다시 시도 해 주세요.'
+        )
     }
-});
+}));
 
-router.post('/rotation', async (req, res) => {
-    await saveLog(req);
-
+router.post('/rotation', asyncLogger(__filename, async (req, res, userId) => {
     const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     const daysKo = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
 
-    const userId = req.body.userRequest.user.id;
     const day = days[daysKo.indexOf(req.body.action.params.day)];
     const period = parseInt(req.body.action.params.period[0]);
     const teacher = req.body.action.params.teacher;
@@ -275,14 +243,14 @@ router.post('/rotation', async (req, res) => {
                     simpleText: {text: `📅 이번 주차의 선생님이 성공적으로 등록되었습니다.`}
                 }]
             }
-        })
+        });
     } else {
-        return res.json(printError(
-            './routes/schedule_upload.js',
-            'Error occurred while setting rotation',
-            '등록에 실패했습니다.\n선생님 성함이 맞는지 다시 한번 확인해 주세요.'
-        ));
+        return printError(
+            __filename,
+            `Error on ${__filename}: while saving rotation`,
+            '오류가 발생했습니다.\n잠시 후에 다시 시도 해 주세요.'
+        )
     }
-});
+}));
 
 module.exports = router;
