@@ -1,71 +1,66 @@
 const Todo = require('./models/Todo');
+const {saveLog, printError, asyncLogger} = require('./utils/logger');
 
-async function createTodo(inputData) {
-    try {
-        const {
-            year,
-            grade,
-            classes,
-            isLong,
-            showTime,
-            dateInput,   // 단일 날짜: { year, month, day }
-            periodInput, // 기간 날짜: { start: { year, month, day }, end: { year, month, day } }
-            timeInput,   // 시간 정보: { hour, minute } (showTime이 true일 때만 입력)
-            title,
-            explanation,
-            reflectionRatio,
-            isMandatory
-        } = inputData;
+const createTodo = asyncLogger(__filename, async (inputData) => {
+    const {
+        year,
+        grade,
+        classes,
+        isLong,
+        showTime,
+        dateInput,   // 단일 날짜: { year, month, day }
+        periodInput, // 기간 날짜: { start: { year, month, day }, end: { year, month, day } }
+        timeInput,   // 시간 정보: { hour, minute } (showTime이 true일 때만 입력)
+        title,
+        explanation,
+        reflectionRatio,
+        isMandatory
+    } = inputData;
 
-        let dateValue = null;
-        let periodValue = null;
-        let timeValue = null;
+    let dateValue = null;
+    let periodValue = null;
+    let timeValue = null;
 
-        if (isLong) {
-            periodValue = {
-                start: parseZeroTimeDate(periodInput.start),
-                end: parseZeroTimeDate(periodInput.end)
-            };
-        } else {
-            dateValue = parseZeroTimeDate(dateInput);
-        }
-
-        if (showTime && timeInput) {
-            timeValue = {
-                hour: Number(timeInput.hour),
-                minute: Number(timeInput.minute)
-            };
-        }
-
-        const newTodo = new Todo({
-            year: Number(year),
-            grade: Number(grade),
-            classes: Number(classes),
-            isLong,
-            showTime,
-            date: dateValue,
-            period: periodValue,
-            time: timeValue, // showTime이 false면 null로 저장
-            title,
-            explanation: explanation || "",
-            reflectionRatio: reflectionRatio !== undefined ? Number(reflectionRatio) : null,
-            isMandatory,
-            updatedAt: new Date()
-        });
-
-        const savedTodo = await newTodo.save();
-        console.log('✅ 성공적으로 저장되었습니다:', savedTodo._id);
-        return savedTodo;
-
-    } catch (error) {
-        console.error('❌ Todo 저장 중 오류 발생:', error.message);
-        throw error;
+    if (isLong) {
+        periodValue = {
+            start: parseZeroTimeDate(periodInput.start),
+            end: parseZeroTimeDate(periodInput.end)
+        };
+    } else {
+        dateValue = parseZeroTimeDate(dateInput);
     }
-}
+
+    if (showTime && timeInput) {
+        timeValue = {
+            hour: Number(timeInput.hour),
+            minute: Number(timeInput.minute)
+        };
+    }
+
+    const newTodo = new Todo({
+        year: Number(year),
+        grade: Number(grade),
+        classes: Number(classes),
+        isLong,
+        showTime,
+        date: dateValue,
+        period: periodValue,
+        time: timeValue, // showTime이 false면 null로 저장
+        title,
+        explanation: explanation || "",
+        reflectionRatio: reflectionRatio !== undefined ? Number(reflectionRatio) : null,
+        isMandatory,
+        updatedAt: new Date()
+    });
+
+    const savedTodo = await newTodo.save();
+    console.log('Todo successfully saved manually:', savedTodo._id);
+    return savedTodo;
+});
 
 function parseZeroTimeDate(dateObj) {
     if (!dateObj) return null;
-    const { year, month, day } = dateObj;
+    const {year, month, day} = dateObj;
     return new Date(Number(year), Number(month) - 1, Number(day), 0, 0, 0, 0);
 }
 
