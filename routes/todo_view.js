@@ -45,7 +45,7 @@ function formatDateShort(dateObj) {
     return `${d.getMonth() + 1}.${d.getDate()}`;
 }
 
-async function getTodos(res, req, targetDate) {
+async function getTodos(targetDate) {
     return Todo.find({
         $or: [
             {
@@ -61,17 +61,17 @@ async function getTodos(res, req, targetDate) {
     }).sort({'time.hour': 1, 'time.minute': 1, updatedAt: -1});
 }
 
-async function makeResponse(res, req, targetDate) {
-    const todos = await getTodos(res, req, targetDate);
+async function makeResponse(targetDate) {
+    const todos = await getTodos(targetDate);
 
     const message = formatTodoList(todos, targetDate.getMonth() + 1, targetDate.getDate());
 
-    return res.json({
+    return {
         version: "2.0",
         template: {
             outputs: [{simpleText: {text: message}}]
         }
-    });
+    };
 }
 
 router.post('/', asyncLogger(__filename, async (req, res, userId) => {
@@ -80,14 +80,14 @@ router.post('/', asyncLogger(__filename, async (req, res, userId) => {
     const currentYear = new Date().getFullYear();
     const targetDate = new Date(currentYear, month - 1, day, 0, 0, 0, 0);
 
-    return await makeResponse(res, req, targetDate);
+    return await res.json(makeResponse(targetDate));
 }));
 
 router.post('/today', asyncLogger(__filename, async (req, res, userId) => {
     const targetDate = new Date();
     targetDate.setHours(0, 0, 0, 0);
 
-    return await makeResponse(res, req, targetDate);
+    return await res.json(makeResponse(targetDate));
 }));
 
 module.exports = router;
