@@ -11,7 +11,7 @@ async function saveLog(req) {
         const time = new Date().toLocaleString('ko-KR', {timeZone: 'Asia/Seoul'});
 
         console.log(`\n${colors.cyan}[USER LOG]${colors.reset} ${time}`);
-        console.log(`${colors.yellow}ID:${colors.reset} ${userId.substring(0, 10)}...`);
+        console.log(`${colors.yellow}ID:${colors.reset} ${userId}`);
         console.log(`${colors.green}Input:${colors.reset} "${utterance}"`);
         console.log(`${colors.green}Block:${colors.reset} ${blockName}`);
         console.log(`${colors.green}Params:${colors.reset} ${params}`);
