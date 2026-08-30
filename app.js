@@ -20,6 +20,7 @@ const scheduleInitRouter = require('./routes/schedule_init');
 const goormInitRouter = require('./routes/goorm');
 const todoAddRouter = require('./routes/todo_add');
 const todoViewRouter = require('./routes/todo_view');
+const evalRouter = require('./routes/eval');
 
 app.use('/api/iasa/meal', mealRouter);
 app.use('/api/iasa/schedule/upload', scheduleUploadRouter);
@@ -29,6 +30,7 @@ app.use('/api/iasa/schedule/initialize', scheduleInitRouter);
 app.use('/api/iasa/goorm', goormInitRouter);
 app.use('/api/iasa/todo/add', todoAddRouter);
 app.use('/api/iasa/todo/view', todoViewRouter);
+app.use('/api/iasa/eval', evalRouter);
 
 const PORT = Number(process.env.PORT) || 25565;
 app.listen(PORT, '0.0.0.0', () => {
