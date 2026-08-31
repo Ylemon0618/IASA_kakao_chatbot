@@ -179,6 +179,14 @@ router.post('/today', asyncLogger(__filename, async (req, res, userId) => {
     return res.json(await makeResponse(targetDate));
 }));
 
+router.post('/tomorrow', asyncLogger(__filename, async (req, res, userId) => {
+    const targetDate = new Date();
+    targetDate.setDate(targetDate.getDate() + 1);
+    targetDate.setHours(0, 0, 0, 0);
+
+    return res.json(await makeResponse(targetDate));
+}));
+
 router.post('/urgent', asyncLogger(__filename, async (req, res, userId) => {
     const urgentTodos = await getUrgentTodos();
     const responseJson = makeUrgentResponse(urgentTodos);
