@@ -152,4 +152,24 @@ router.post('/search', asyncLogger(__filename, async (req, res, userId) => {
     return res.json(response);
 }));
 
+router.post('/search/date', asyncLogger(__filename, async (req, res, userId) => {
+    const params = req.body.action.params;
+    const month = parseInt(req.body.action.params.month);
+    const day = parseInt(req.body.action.params.day);
+    const currentYear = new Date().getFullYear();
+    const targetDate = new Date(currentYear, month - 1, day);
+
+    const data = await getIasaMeal(process.env.RIRO_ID, process.env.RIRO_PW, targetDate);
+
+    if (!data || (data.breakfast.length === 0 && data.lunch.length === 0)) {
+        return res.json({
+            version: "2.0",
+            template: {outputs: [{simpleText: {text: "급식 정보를 불러올 수 없습니다."}}]}
+        });
+    }
+
+    const response = await makeResponse(data, isTomorrow);
+    return res.json(response);
+}));
+
 module.exports = router;
