@@ -139,14 +139,7 @@ function makeUrgentResponse(todos) {
 
         return {
             title: cardTitle,
-            description: descParts.join('\n'),
-            buttons: [
-                {
-                    action: "message",
-                    label: "오늘 일정 보기",
-                    messageText: "오늘 일정"
-                }
-            ]
+            description: descParts.join('\n')
         };
     });
 
@@ -158,7 +151,11 @@ function makeUrgentResponse(todos) {
                     type: "textCard",
                     items: items
                 }
-            }]
+            }],
+            quickReplies: [
+                {action: "message", label: `오늘 일정 확인하기`, messageText: `오늘 일정 확인하기`},
+                {action: "message", label: `내일 일정 확인하기`, messageText: `내일 일정 확인하기`}
+            ]
         }
     };
 }
