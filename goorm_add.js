@@ -22,67 +22,88 @@ return Goorm.insertOne(
         problems: [
             {
                 number: 1,
-                code: `class Student:
-\tdef __init__(self, name, id):
+                code: `class Animal:
+\tdef __init__(self, name, age):
 \t\tself.name = name
-\t\tself.id = id
+\t\tself.age = age
 
-\tdef print_info(self):
-\t\tprint(f"이름: {self.name}, 학번: {self.id}")`
+\tdef sound(self):
+\t\treturn "동물이 소리를 냅니다."
+
+class Dog(Animal):
+\tdef __init__(self, name, age, breed):
+\t\tsuper().__init__(name, age)
+\t\tself.breed = breed
+
+\tdef bark(self):
+\t\treturn "멍멍!"
+`
             },
             {
                 number: 2,
-                code: `class Rectangle:
-\tdef __init__(self, width, height):
-\t\tself.width = width
-\t\tself.height = height
+                code: `class Vehicle:
+\tdef __init__(self, brand, speed):
+\t\tself.brand = brand
+\t\tself.speed = speed
 
-\tdef get_area(self):
-\t\treturn self.width * self.height
+\tdef describe(self):
+\t\treturn f"이 차량은 시속 {self.speed}km로 이동합니다."
 
-\tdef get_perimeter(self):
-\t\treturn 2 * (self.width + self.height)`
+class Car(Vehicle):
+\tdef __init__(self, brand, speed, fuel):
+\t\tsuper().__init__(brand, speed)
+\t\tself.fuel = fuel
+
+\tdef fuel_info(self):
+\t\treturn f"연료 종류: {self.fuel}"
+`
             },
             {
                 number: 3,
-                code: `class Calculator:
-\tdef __init__(self, n1, n2):
-\t\tself.n1 = n1
-\t\tself.n2 = n2
+                code: `class BankAccount:
+\tdef __init__(self, balance):
+\t\tself.__balance = balance
 
-\tdef add(self):
-\t\treturn self.n1 + self.n2
+\tdef deposit(self, amount):
+\t\tself.__balance += amount
 
-\tdef subtract(self):
-\t\treturn self.n1 - self.n2`
+\tdef get_balance(self):
+\t\treturn self.__balance
+`
             },
             {
                 number: 4,
-                code: `class BankAccount:
-\tdef __init__(self, owner, balance):
-\t\tself.owner = owner
-\t\tself.balance = balance
+                code: `class User:
+\tdef __init__(self, password):
+\t\tself.__password = password
 
-\tdef deposit(self, amount):
-\t\tself.balance += amount
+\tdef check_password(self, password):
+\t\treturn self.__password == password
 
-\tdef withdraw(self, amount):
-\t\tself.balance -= amount`
+\tdef change_password(self, old_password, new_password):
+\t\tchangeable = self.check_password(old_password)
+\t\tif changeable:
+\t\t\tself.__password = new_password
+\t\treturn changeable
+`
             },
             {
                 number: 5,
-                code: `class Counter:
-\tdef __init__(self):
-\t\tself.count = 0
+                code: `class ClubMember:
+\ttotal_count = 0
 
-\tdef increment(self):
-\t\tself.count += 1
+\t@classmethod
+\tdef __init__(cls, name):
+\t\tcls.total_count += 1
 
-\tdef decrement(self):
-\t\tself.count -= 1
+\t@staticmethod
+\tdef is_valid_name(name):
+\t\treturn 2 <= len(name) <= 10
 
-\tdef get_count(self):
-\t\treturn self.count`
+\t@classmethod
+\tdef get_total_count(cls):
+\t\treturn cls.total_count
+`
             },
         ]
     }
