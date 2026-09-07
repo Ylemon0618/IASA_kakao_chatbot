@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
 
 const goormSchema = new mongoose.Schema({
-    enabled: {
-        type: Boolean,
-        default: true,
-        required: true
+    week: {
+        type: Number,
+        required: true,
     },
     problems: [
         {

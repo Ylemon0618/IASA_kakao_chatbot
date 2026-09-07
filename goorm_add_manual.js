@@ -8,17 +8,12 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.log(err));
 
-Goorm.findOneAndUpdate(
-    { enabled: true },
-    {
-        $set: { enabled: false }
-    },
-    { upsert: true }
-);
+const week = await Goorm.findOne({week: {$exists: true}})
+    .sort({week: -1}).week;
 
 return Goorm.insertOne(
     {
-        enabled: true,
+        week: week + 1,
         problems: [
             {
                 number: 1,
