@@ -38,8 +38,8 @@ router.post('/', asyncLogger(__filename, async (req, res, userId) => {
                     label: "지난번 문제 확인하기",
                     blockId: "69e07f3b9e38951753fa1751",
                     extra: {
-                        number: number,
-                        week: week - 1
+                        number: {groupName: '', origin: `${number}`, value: `${number}`},
+                        week: {groupName: '', origin: `${week}`, value: `${week}`}
                     }
                 },
                 {action: "message", label: `이전 문제 코드 보기`, messageText: `구름 ${number - 1}번 문제 코드 알려줘`},
