@@ -4,17 +4,12 @@ const router = express.Router();
 const {saveLog, printError, asyncLogger} = require('../utils/logger');
 
 router.post('/', asyncLogger(__filename, async (req, res, userId) => {
-    const {clientExtra, params} = req.body.action;
-    const client = (clientExtra && Object.keys(clientExtra).length > 0) ? clientExtra : params;
-    console.log(req.body.action.clientExtra);
-    console.log(client);
-
-    let week = client.week;
+    let week = req.body.action.params.week;
     const query = week ? {week: Number(week)} : {week: {$exists: true}};
     const data = await Goorm.findOne(query).sort({week: -1});
     week = data?.week;
 
-    const number = parseInt(client.number);
+    const number = parseInt(req.body.action.params.number);
     const problem = data?.problems?.[number - 1];
 
     if (!problem) {
@@ -33,15 +28,7 @@ router.post('/', asyncLogger(__filename, async (req, res, userId) => {
                 },
             }],
             quickReplies: [
-                {
-                    action: "block",
-                    label: "지난번 문제 확인하기",
-                    blockId: "69e07f3b9e38951753fa1751",
-                    extra: {
-                        number: {groupName: '', origin: `${number}`, value: `${number}`},
-                        week: {groupName: '', origin: `${week}`, value: `${week}`}
-                    }
-                },
+                {action: "message", label: "지난번 문제 확인하기", messageText: `구름 ${week - 1}주차 ${number}번 문제 코드 알려줘`},
                 {action: "message", label: `이전 문제 코드 보기`, messageText: `구름 ${number - 1}번 문제 코드 알려줘`},
                 {action: "message", label: `다음 문제 코드 보기`, messageText: `구름 ${number + 1}번 문제 코드 알려줘`}
             ]
