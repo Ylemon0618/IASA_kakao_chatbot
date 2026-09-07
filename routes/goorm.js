@@ -4,7 +4,7 @@ const router = express.Router();
 const {saveLog, printError, asyncLogger} = require('../utils/logger');
 
 router.post('/', asyncLogger(__filename, async (req, res, userId) => {
-    const client = req.body.action.clientExtra ?? req.body.action.params;
+    const client = (clientExtra && Object.keys(clientExtra).length > 0) ? clientExtra : params;
 
     let week = client.week;
     const query = week ? {week: Number(week)} : {week: {$exists: true}};
