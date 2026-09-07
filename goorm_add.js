@@ -22,88 +22,69 @@ return Goorm.insertOne(
         problems: [
             {
                 number: 1,
-                code: `class Animal:
-\tdef __init__(self, name, age):
-\t\tself.name = name
-\t\tself.age = age
+                code: `class Note:
+\tdef __init__(self):
+\t\tself.content = ''
 
-\tdef sound(self):
-\t\treturn "동물이 소리를 냅니다."
+\tdef write_content(self, content):
+\t\tself.content += content
 
-class Dog(Animal):
-\tdef __init__(self, name, age, breed):
-\t\tsuper().__init__(name, age)
-\t\tself.breed = breed
+\tdef remove_content(self):
+\t\tself.content = ''
 
-\tdef bark(self):
-\t\treturn "멍멍!"
-`
+\tdef __str__(self):
+\t\treturn self.content
+
+class Notebook:
+\tdef __init__(self, title):
+\t\tself.title = title
+\t\tself.page_number = 0
+\t\tself.notes = {}
+
+\tdef add_note(self, note):
+\t\tif self.page_number == 300:
+\t\t\tprint("더 이상 노트를 추가할 수 없습니다.")
+\t\telse:
+\t\t\tself.page_number += 1
+\t\t\tself.notes[self.page_number] = note`
             },
             {
                 number: 2,
-                code: `class Vehicle:
-\tdef __init__(self, brand, speed):
-\t\tself.brand = brand
-\t\tself.speed = speed
+                code: `from abc import *
+class Post(ABC):
+\ttotal_posts = 0
 
-\tdef describe(self):
-\t\treturn f"이 차량은 시속 {self.speed}km로 이동합니다."
+\tdef __init__(self, author):
+\t\tself.author = author
+\t\tPost.total_posts += 1
 
-class Car(Vehicle):
-\tdef __init__(self, brand, speed, fuel):
-\t\tsuper().__init__(brand, speed)
-\t\tself.fuel = fuel
-
-\tdef fuel_info(self):
-\t\treturn f"연료 종류: {self.fuel}"
-`
-            },
-            {
-                number: 3,
-                code: `class BankAccount:
-\tdef __init__(self, balance):
-\t\tself.__balance = balance
-
-\tdef deposit(self, amount):
-\t\tself.__balance += amount
-
-\tdef get_balance(self):
-\t\treturn self.__balance
-`
-            },
-            {
-                number: 4,
-                code: `class User:
-\tdef __init__(self, password):
-\t\tself.__password = password
-
-\tdef check_password(self, password):
-\t\treturn self.__password == password
-
-\tdef change_password(self, old_password, new_password):
-\t\tchangeable = self.check_password(old_password)
-\t\tif changeable:
-\t\t\tself.__password = new_password
-\t\treturn changeable
-`
-            },
-            {
-                number: 5,
-                code: `class ClubMember:
-\ttotal_count = 0
+\t@abstractmethod
+\tdef preview(self):
+\t\tpass
 
 \t@classmethod
-\tdef __init__(cls, name):
-\t\tcls.total_count += 1
+\tdef count(cls):
+\t\treturn cls.total_posts
 
 \t@staticmethod
-\tdef is_valid_name(name):
-\t\treturn 2 <= len(name) <= 10
+\tdef is_valid_tag(tag):
+\t\treturn tag.startswith('#') and len(tag) >= 
 
-\t@classmethod
-\tdef get_total_count(cls):
-\t\treturn cls.total_count
-`
+class TextPost(Post):
+\tdef __init__(self, author, text):
+\t\tsuper().__init__(author)
+\t\tself.text = text
+
+\tdef preview(self):
+\t\treturn f"[글] {self.author}: {self.text[:10]}..."
+
+class PhotoPost(Post):
+\tdef __init__(self, author, photo_count):
+\t\tsuper().__init__(author)
+\t\tself.photo_count = photo_count
+
+\tdef preview(self):
+\t\treturn f"[사진] {self.author}: 사진 {self.photo_count}장"`
             },
         ]
     }
