@@ -1,23 +1,23 @@
-const Goorm = require("./models/Goorm");
-require('dotenv').config();
+require('dotenv').config({ quiet: true });
 const mongoose = require('mongoose');
+const Goorm = require("./models/Goorm");
 
-console.log(`Connecting to MongoDB with URI: ${process.env.MONGO_URI}`);
+async function run() {
+    try {
+        await mongoose.connect(process.env.MONGO_URI);
+        console.log('MongoDB Connected');
 
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('MongoDB Connected'))
-    .catch(err => console.log(err));
+        const latestGoorm = await Goorm.findOne({ week: { $exists: true } }).sort({ week: -1 });
+        const nextWeek = latestGoorm?.week ? latestGoorm.week + 1 : 1;
 
-const week = Goorm.findOne({week: {$exists: true}})
-    .sort({week: -1})?.week;
+        console.log(`생성될 주차(week): ${nextWeek}`);
 
-const inserted = Goorm.insertOne(
-    {
-        week: week ? week + 1 : 1,
-        problems: [
-            {
-                number: 1,
-                code: `class Note:
+        const inserted = await Goorm.create({
+            week: nextWeek,
+            problems: [
+                {
+                    number: 1,
+                    code: `class Note:
 \tdef __init__(self):
 \t\tself.content = ''
 
@@ -42,10 +42,10 @@ class Notebook:
 \t\telse:
 \t\t\tself.page_number += 1
 \t\t\tself.notes[self.page_number] = note`
-            },
-            {
-                number: 2,
-                code: `from abc import *
+                },
+                {
+                    number: 2,
+                    code: `from abc import *
 class Post(ABC):
 \ttotal_posts = 0
 
@@ -80,15 +80,18 @@ class PhotoPost(Post):
 
 \tdef preview(self):
 \t\treturn f"[사진] {self.author}: 사진 {self.photo_count}장"`
-            },
-        ]
-    }
-);
+                }
+            ]
+        });
 
-if (inserted) {
-    console.log("Answer successfully inserted")
-} else {
-    console.log("Error occurred")
+        if (inserted) {
+            console.log("Answer successfully inserted");
+        }
+    } catch (err) {
+        console.error("Error occurred:", err.message);
+    } finally {
+        process.exit();
+    }
 }
 
-process.exit();
+run();
