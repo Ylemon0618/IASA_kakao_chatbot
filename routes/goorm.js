@@ -4,12 +4,14 @@ const router = express.Router();
 const {saveLog, printError, asyncLogger} = require('../utils/logger');
 
 router.post('/', asyncLogger(__filename, async (req, res, userId) => {
-    let week = req.body.action.params.week;
+    const client = req.body.action.clientExtra ?? req.body.action.params;
+
+    let week = client.week;
     const query = week ? {week: Number(week)} : {week: {$exists: true}};
     const data = await Goorm.findOne(query).sort({week: -1});
     week = data?.week;
 
-    const number = parseInt(req.body.action.params.number);
+    const number = parseInt(client.number);
     const problem = data?.problems?.[number - 1];
 
     if (!problem) {
