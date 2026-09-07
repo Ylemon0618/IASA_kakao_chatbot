@@ -24,7 +24,7 @@ router.post('/', asyncLogger(__filename, async (req, res, userId) => {
         template: {
             outputs: [{
                 simpleText: {
-                    text: `${number}번 문제 정답\n\n${problem.code}`
+                    text: `${number}번 문제 정답 (${week}주차)\n\n${problem.code}`
                 },
             }],
             quickReplies: [
