@@ -34,6 +34,6 @@ app.use('/api/iasa/eval', evalRouter);
 
 const PORT = Number(process.env.PORT) || 25565;
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`${colors.blue}-----------------------------------${colors.reset}`);
+    console.log(`${colors.blue}===================================${colors.reset}`);
     console.log(`${colors.white}Server running on port ${PORT}${colors.reset}`);
 });

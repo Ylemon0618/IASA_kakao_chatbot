@@ -15,7 +15,7 @@ async function saveLog(req) {
         console.log(`${colors.green}Input:${colors.reset} "${utterance}"`);
         console.log(`${colors.green}Block:${colors.reset} ${blockName}`);
         console.log(`${colors.green}Params:${colors.reset} ${params}`);
-        console.log(`------------------------------`);
+        console.log(`-----------------------------------`);
 
         const newLog = new Log({
             userId: userId,
