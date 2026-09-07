@@ -8,10 +8,10 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.log(err));
 
-const week = await Goorm.findOne({week: {$exists: true}})
+const week = Goorm.findOne({week: {$exists: true}})
     .sort({week: -1}).week;
 
-return Goorm.insertOne(
+const inserted = Goorm.insertOne(
     {
         week: week + 1,
         problems: [
@@ -84,3 +84,11 @@ class PhotoPost(Post):
         ]
     }
 );
+
+if (inserted) {
+    console.log("Answer successfully inserted")
+} else {
+    console.log("Error occurred")
+}
+
+process.exit();
