@@ -9,11 +9,11 @@ mongoose.connect(process.env.MONGO_URI)
     .catch(err => console.log(err));
 
 const week = Goorm.findOne({week: {$exists: true}})
-    .sort({week: -1}).week;
+    .sort({week: -1})?.week;
 
 const inserted = Goorm.insertOne(
     {
-        week: week + 1,
+        week: week ? week + 1 : 1,
         problems: [
             {
                 number: 1,
