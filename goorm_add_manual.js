@@ -1,12 +1,18 @@
 require('dotenv').config({quiet: true});
 const mongoose = require('mongoose');
 const Goorm = require("./models/Goorm");
-
 const readline = require('readline');
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-});
+
+function askQuestion(query) {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
+    return new Promise((resolve) => rl.question(query, (ans) => {
+        rl.close();
+        resolve(ans.trim());
+    }));
+}
 
 async function run() {
     try {
@@ -274,13 +280,9 @@ print(f"생성된 총 캐릭터 수: {c.get_total_count()}명")`
         await mongoose.connect(process.env.MONGO_URI);
         console.log('MongoDB Connected');
 
-        let command;
-        rl.question('Insert new week(I) / Append existing week(A)', (answer) => {
-            command = answer;
-            rl.close();
-        });
+        const command = await askQuestion('Insert new week(I) / Append existing week(A): ');
 
-        if (command === 'I') {
+        if (command.toUpperCase() === 'I') {
             const latestGoorm = await Goorm.findOne({week: {$exists: true}}).sort({week: -1});
             const nextWeek = latestGoorm?.week ? latestGoorm.week + 1 : 1;
 
@@ -294,26 +296,28 @@ print(f"생성된 총 캐릭터 수: {c.get_total_count()}명")`
             if (inserted) {
                 console.log("Answer successfully inserted");
             }
-        } else if (command === 'A') {
-            rl.question('Enter week number: ', async (answer) => {
-                const result = await Goorm.updateOne(
-                    {week: answer},
-                    {$push: {problems: problems}}
-                );
+        } else if (command.toUpperCase() === 'A') {
+            const weekStr = await askQuestion('Enter week number: ');
+            const targetWeek = Number(weekStr);
 
-                if (result.matchedCount === 0) {
-                    console.log(`Unable to find week ${answer}`);
-                    return false;
-                }
+            const result = await Goorm.updateOne(
+                {week: targetWeek},
+                {$push: {problems: {$each: problems}}}
+            );
 
-                console.log(`Answer successfully appended`);
-                return true;
-            });
+            if (result.matchedCount === 0) {
+                console.log(`Unable to find week ${targetWeek}`);
+            } else {
+                console.log(`Answer successfully appended to week ${targetWeek}`);
+            }
+        } else {
+            console.log("Invalid command! Use 'I' or 'A'.");
         }
 
     } catch (err) {
         console.error("Error occurred:", err.message);
     } finally {
+        await mongoose.disconnect();
         process.exit();
     }
 }
