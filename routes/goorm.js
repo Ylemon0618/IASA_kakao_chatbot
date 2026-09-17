@@ -12,19 +12,14 @@ router.post('/', asyncLogger(__filename, async (req, res, userId) => {
     const number = parseInt(req.body.action.params.number);
     const problem = data?.problems?.[number - 1];
 
-    if (!problem) {
-        return res.json({
-            version: "2.0",
-            template: {outputs: [{simpleText: {text: "아직 등록된 코드가 없습니다."}}]}
-        });
-    }
+    const text = problem ? `${number}번 문제 정답 (${week}주차)\n\n${problem.code}` : "아직 등록된 코드가 없습니다.";
 
     return res.json({
         version: "2.0",
         template: {
             outputs: [{
                 simpleText: {
-                    text: `${number}번 문제 정답 (${week}주차)\n\n${problem.code}`
+                    text: text
                 },
             }],
             quickReplies: [
