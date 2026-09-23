@@ -18,358 +18,185 @@ async function run() {
     try {
         const problems = [
             {
-                number: 20,
-                code: `class DeliveryRider:
-\tdef __init__(self, rider_name):
-\t\tself.rider_name = rider_name
-\t\tself.rating = 4.5
+                number: 1,
+                code: `import random
 
-\tdef accept_order(self, order_name):
-\t\treturn f"{self.rider_name}님이 {order_name} 주문을 수락했습니다."
+s, n, m = map(int, input().split())
+random.seed(s)
 
-class SuspendedRider(DeliveryRider):
-\tdef __init__(self, rider_name):
-\t\tsuper().__init__(rider_name)
-\t\tself.rating = 2.0
+arr = list(range(1, 101))
+random.shuffle(arr)
 
-\tdef accept_order(self, order_name):
-\t\treturn f"정지: {self.rider_name}님은 평점이 낮아 주문을 수락할 수 없습니다."
+max_sum, players = -1, []
+for i in range(n):
+\tl = sum(arr[i * m:i * m + m])
+\tif max_sum == l:
+\t\tplayers.append(i + 1)
+\telif max_sum < l:
+\t\tmax_sum = l
+\t\tplayers = [i + 1]
 
-class PremiumRider(DeliveryRider):
-\tdef __init__(self, rider_name, vehicle_type):
-\t\tsuper().__init__(rider_name)
-\t\tself.rating = 4.9
-\t\tself.vehicle_type = vehicle_type
-
-\tdef accept_order(self, order_name):
-\t\treturn f"[{self.vehicle_type} 프리미엄 라이더] {self.rider_name}님이 {order_name} 주문을 수락했습니다."`
+print(*players)`
             },
             {
-                number: 21,
-                code: `class Poke:
-\tdef __init__(self, name, Type):
-\t\tself.name = name
-\t\tself.Type = Type
+                number: 2,
+                code: `from data.nickname import 이름, 형용사
+import random
 
-\tdef print_data(self):
-\t\tprint(f"이름: {self.name}, 타입: {self.Type}")
+random.seed(int(input()))
 
-pokemon = Poke(input(), input())
-pokemon.print_data()`
+def make_nickname():
+\tname, adj = random.choice(이름), random.choice(형용사)
+\treturn f"{adj} {name}"
+
+result = make_nickname()
+print(result)`
             },
             {
-                number: 22,
-                code: `class GradeAnalyzer:
-\tdef __init__(self, grades):
-\t\tself.grades = grades
-
-\tdef get_period(self, grade):
-\t\ttemp = []
-\t\tfor i in range(len(self.grades)):
-\t\t\tif self.grades[i] == grade:
-\t\t\t\ttemp.append(i)
-\t\tif len(temp) <= 1:
-\t\t\treturn 0
-\t\treturn temp[-1] - temp[0]
-
-n = int(input())
-grade = GradeAnalyzer(input())
-periods = [(i, grade.get_period(i)) for i in ['A', 'B', 'C', 'D', 'F']]
-periods.sort(key=lambda x: (-x[1], x[0]))
-print(*periods[0])`
+                number: 3,
+                code: `import math
+a, b = map(int, input().split())
+print(f"{math.gcd(a, b)} {math.sqrt(a ** 2 + b ** 2):.2f} {math.lcm(a, b)}")`
             },
             {
-                number: 23,
-                code: `class DateCourse:
-\tdef __init__(self, name1, name2, love):
-\t\tself.name1 = name1
-\t\tself.name2 = name2
-\t\tself.love = love
+                number: 4,
+                code: `import math
 
-\tdef watch_movie(self, activity, point):
-\t\tself.love += point
-\t\tprint(f"{activity} 영화를 함께 보았습니다!")
+class Object:
+\tdef __init__(self, x, y):
+\t\tself.x = x
+\t\tself.y = y
 
-\tdef eat_dinner(self, activity, point):
-\t\tself.love += point
-\t\tprint(f"{self.name1}와(과) {self.name2}이(가) {activity}을(를) 맛있게 먹었습니다.")
+\tdef distance(self, other):
+\t\treturn math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
 
-\tdef check_love(self):
-\t\tprint(f"현재 호감도: {self.love}점")`
+class Angel(Object):
+\tdef __init__(self, number, x, y, at):
+\t\tsuper().__init__(x, y)
+\t\tself.number = number
+\t\tself.at = at
+\t\tself.alive = True
+
+class Junhyeok(Object):
+\tdef __init__(self, energy):
+\t\tsuper().__init__(0, 0)
+\t\tself.energy = energy
+\t\tself.order = []
+
+\tdef current_at(self, angel, angels, R):
+\t\tcnt = 0
+\t\tfor i in angels:
+\t\t\tif angel.distance(i) <= R and i.alive and angel != i:
+\t\t\t\tcnt += 1
+\t\treturn angel.at + cnt * 5
+
+\tdef attack_cost(self, angel, angels, R):
+\t\treturn math.ceil(self.distance(angel)) + self.current_at(angel, angels, R)
+
+\tdef find_target(self, angels, R):
+\t\tmin_cost, target = 10e9, None
+\t\tfor angel in angels:
+\t\t\tcost = self.attack_cost(angel, angels, R)
+\t\t\tif cost < min_cost:
+\t\t\t\ttarget = angel
+\t\t\t\tmin_cost = cost
+\t\treturn target, min_cost
+
+\tdef attack(self, angel, cost):
+\t\tself.x, self.y = angel.x, angel.y
+\t\tself.energy -= cost
+\t\tangel.alive = False
+\t\tself.order.append(angel.number)
+
+\tdef battle(self, angels, R):
+\t\twhile angels or self.energy > 0:
+\t\t\ttarget, cost = self.find_target(angels, R)
+\t\t\tif self.energy < cost:
+\t\t\t\tbreak
+\t\t\tangels.remove(target)
+\t\t\tself.attack(target, cost)
+
+N, E, R = map(int, input().split())
+angels = []
+for i in range(N):
+\tx, y, at = map(int, input().split())
+\tangels.append(Angel(i + 1, x, y, at))
+
+HYEOK = Junhyeok(E)
+HYEOK.battle(angels, R)
+
+print("FAILED" if angels else "CLEAR")
+print(*HYEOK.order if HYEOK.order else "NONE")
+print(HYEOK.energy)`
             },
             {
-                number: 24,
-                code: `class epl:
-\tdef __init__(self, rank):
-\t\tself.rank = rank
-\t\tself.result_win = "not yet"
-\t\tself.result_ticket = ''
-
-\tdef result(self):
-\t\tif self.rank == 1:
-\t\t\tself.result_win = "premier league champions"
-
-\t\tif 1 <= self.rank <= 4:
-\t\t\tself.result_ticket = "champions league"
-\t\telif self.rank == 5:
-\t\t\tself.result_ticket = "europa league"
-\t\telif 6 <= self.rank <= 17:
-\t\t\tself.result_ticket = "premier league"
-\t\telse:
-\t\t\tself.result_ticket = "relegration"
-
-\tdef print_info(self):
-\t\tprint(self.result_win)
-\t\tprint(self.result_ticket)`
+                number: 5,
+                code: `import math
+n, k = int(input()), int(input())
+print((k - 1) * math.comb(n - k + 1, k - 1))`
             },
             {
-                number: 25,
-                code: `class Player:
-\tdef __init__(self, name, back_number):
-\t\tself.name = name
-\t\tself.back_number = back_number
-
-\tdef print_info(self):
-\t\tprint(f"이름: {self.name}, 등번호: {self.back_number}")
-
-class Pitcher(Player):
-\tdef __init__(self, name, back_number, earned_runs, innings):
-\t\tself.name = name
-\t\tself.back_number = back_number
-\t\tself.earned_runs = earned_runs
-\t\tself.innings = innings
-
-\tdef print_info(self):
-\t\tprint(f"이름: {self.name}, 등번호: {self.back_number}, 평균자책점: {self.earned_runs * 9 / self.innings:.2f}")`
+                number: 6,
+                code: `from data.yelena import *
+show_face()
+if int(input()):
+\tchange_face()
+show_face()`
             },
             {
-                number: 26,
-                code: `class Station:
-\tdef __init__(self, name, d1, d2, diesel, gasoline):
-\t\tself.name = name
-\t\tself.d1 = d1
-\t\tself.d2 = d2
-\t\tself.diesel = diesel
-\t\tself.gasoline = gasoline
+                number: 7,
+                code: `import numpy as np
+import math
 
-\tdef max_oiling(self, budget):
-\t\treturn (budget / self.diesel, budget / self.gasoline)
+def check(a, b, c):
+\tfor n in range(2, 11):
+\t\tif a == math.pow(c, n) + b:
+\t\t\treturn True
+\treturn False
 
-class Car:
-\tdef __init__(self, name, fuel, efficiency):
-\t\tself.name = name
-\t\tself.fuel = fuel
-\t\tself.efficiency = efficiency
+cnt = int(input())
+seat = np.array(list(map(int, input().split())))
 
-\tdef max_distance(self):
-\t\treturn self.fuel * self.efficiency
-
-\tdef can_arrive_station(self, station):
-\t\tif station.d1 <= self.max_distance():
-\t\t\treturn self.fuel - station.d1 / self.efficiency
-\t\treturn False
-
-class DieselCar(Car):
-\tdef __init__(self, name, fuel, efficiency):
-\t\tsuper().__init__(name, fuel, efficiency)
-
-\tdef can_arrive_destination(self, station, budget):
-\t\toil_left = self.can_arrive_station(station)
-\t\tif oil_left is False:
-\t\t\treturn False
-
-\t\toil_inneed = station.d2 / self.efficiency
-\t\toil_refuel = oil_inneed - oil_left
-\t\tif oil_refuel <= 0:
-\t\t\treturn 0
-\t\tif oil_refuel > station.max_oiling(budget)[0]:
-\t\t\treturn False
-\t\treturn oil_refuel * station.diesel
-
-class GasolineCar(Car):
-\tdef __init__(self, name, fuel, efficiency):
-\t\tsuper().__init__(name, fuel, efficiency)
-
-\tdef can_arrive_destination(self, station, budget):
-\t\toil_left = self.can_arrive_station(station)
-\t\tif oil_left is False:
-\t\t\treturn False
-
-\t\toil_inneed = station.d2 / self.efficiency
-\t\toil_refuel = oil_inneed - oil_left
-\t\tif oil_refuel <= 0:
-\t\t\treturn 0
-\t\tif oil_refuel > station.max_oiling(budget)[1]:
-\t\t\treturn False
-\t\treturn oil_refuel * station.gasoline
-
-def best_route(car, stations, budget):
-\tans, able_station = -1, None
-\tfor station in stations:
-\t\toil_cost = car.can_arrive_destination(station, budget)
-\t\tif oil_cost is not False and ans < budget - oil_cost:
-\t\t\tans = budget - oil_cost
-\t\t\table_station = station
-
-\tif able_station:
-\t\treturn f"{able_station.name} {ans:.2f}원 남음"
-\treturn "따릉이 타기"
-
-# 입출력처리 코드
-budget = int(input())
-N, M = map(int, input().split())
-
-cars, order = {}, []
-for _ in range(N):
-\tname, fuel_type, fuel, eff = input().split()
-\tcls = DieselCar if fuel_type == "경유" else GasolineCar
-\tcars[name] = cls(name, int(fuel), int(eff))
-\torder.append(name)
-
-stations, by_name = [], {}
-for _ in range(M):
-\tname, d1, d2, diesel, gasoline = input().split()
-\tst = Station(name, int(d1), int(d2), int(diesel), int(gasoline))
-\tstations.append(st)
-\tby_name[name] = st
-
-for _ in range(int(input())):
-\tdata = input().split()
-\tquestion = ' '.join(data[1:])
-
-\tif question == "최대 이동거리":
-\t\tcar = cars[data[0]]
-\t\tprint(f"{car.name} 최대 이동거리: {car.max_distance():.2f}km")
-\telif question == "최대 주유량":
-\t\tstation = by_name[data[0]]
-\t\tdiesel, gasoline = station.max_oiling(budget)
-\t\tprint(f"{station.name} 최대 주유량: 경유 {diesel:.2f}L / 휘발유 {gasoline:.2f}L")
-\telif question.endswith("주유소까지"):
-\t\tcar = cars[data[0]]
-\t\tstation = by_name[data[1]]
-\t\toil_left = car.can_arrive_station(station)
-\t\tif oil_left is False:
-\t\t\tprint(f"{car.name} -> {station.name}: 도달 불가")
-\t\telse:
-\t\t\tprint(f"{car.name} -> {station.name}: 남은 기름 {oil_left:.2f}L")
+a, b, c = map(int, input().split())
+if check(a, b, c):
+\tprint(f"{c}시 예약자입니다.")
+\table = seat.sum()
+\tif b <= able:
+\t\tprint("입장 가능")
 \telse:
-\t\tcar = cars[data[0]]
-\t\tstation = by_name[data[1]]
-\t\tcost = car.can_arrive_destination(station, budget)
-\t\tif cost is False:
-\t\t\tprint(f"{car.name} -> {station.name} -> 도착지: 불가")
-\t\telse:
-\t\t\tprint(f"{car.name} -> {station.name} -> 도착지: {cost:.2f}원")
-
-print(f"[예산 {budget}원] 주유 계획")
-for name in order:
-\tcar = cars[name]
-\tprint(f"{car.name}: {best_route(car, stations, budget)}")`
-            },
-            {
-                number: 27,
-                code: `class Book:
-\tdef __init__(self, title, author):
-\t\tself.title = title
-\t\tself.author = author
-\t\tself.is_borrowed = False
-
-\tdef borrow(self):
-\t\tif self.is_borrowed:
-\t\t\treturn "이미 대출 중입니다."
-\t\tself.is_borrowed = True
-\t\treturn "대출되었습니다."
-
-\tdef return_book(self):
-\t\tif not self.is_borrowed:
-\t\t\treturn "대출되지 않은 책입니다."
-\t\tself.is_borrowed = False
-\t\treturn "반납되었습니다."
-
-\tdef get_info(self):
-\t\treturn f"{self.title} - {self.author} ({'대출중' if self.is_borrowed else '대출가능'})"`
-            },
-            {
-                number: 28,
-                code: `class VIPMember(Member):
-\tdef __init__(self, name, current_books, vip_days):
-\t\tsuper().__init__(name, current_books)
-\t\tself.vip_days = vip_days
-
-\tdef vip_borrow(self, amount):
-\t\tlimit = 5 + self.vip_days * 10
-\t\tif self.current_books + amount <= limit:
-\t\t\tself.current_books += amount
-\t\t\treturn f"VIP 대출 성공. 총 {self.current_books}권 대출 중입니다."
-\t\telse:
-\t\t\treturn "한도 초과로 대출할 수 없습니다."`
-            },
-            {
-                number: 29,
-                code: `class Character:
-\tmax_level = 99
-\t
-\tdef __init__(self, name, level):
-\t\tself.name = name
-\t\tself.level = level
-
-\t@classmethod
-\tdef change_max_level(cls, new_max):
-\t\tcls.max_level = new_max
-
-\t@staticmethod
-\tdef is_valid_name(name):
-\t\treturn len(name) >= 2
-
-\tdef attack(self):
-\t\treturn f"{self.name}이(가) 일반 공격을 합니다!"
-
-class Mage(Character):
-\tdef __init__(self, name, level, mana):
-\t\tsuper().__init__(name, level)
-\t\tself.mana = mana
-
-\tdef attack(self):
-\t\treturn f"{self.name}이(가) 마법 공격을 합니다! (소모 마나: {self.mana})"`
-            },
-            {
-                number: 30,
-                code: `class bnd_member:
-\tdef __init__(self, name, nicknames):
-\t\tself.name = name
-\t\tself.nicknames = nicknames
-
-\tdef has_nickname(self, nickname):
-\t\treturn nickname in self.nicknames
-
-class bnd_directory:
-\tdef __init__(self):
-\t\tself.members = []
-
-\tdef add_member(self, member):
-\t\tself.members.append(member)
-
-BOYNEXTDOOR = bnd_directory()
-member_data = {
-\t"운학": ["우나기", "눈사람"],
-\t"명재현": ["명뇨리따", "명명이"],
-\t"리우": ["대상혁", "애햄이", "두부 모서리"],
-\t"이한": ["제로제로이하나", "물고기 아빠"],
-\t"성호": ["예삐", "막기대라고 넓혀놓은 어깨 주인"],
-\t"태산": ["간ZI폭풍 GIANT MOUNTAIN", "부힛부힛사르르rrr탯냥이"]
-}
-for key, value in member_data.items():
-\tnew_member = bnd_member(key, value)
-\tBOYNEXTDOOR.add_member(new_member)
-
-nick = input()
-for member in BOYNEXTDOOR.members:
-\tif member.has_nickname(nick):
-\t\tprint(f"{nick} -> {member.name}의 별명입니다.")
-\t\tbreak
+\t\tprint(f"입장 불가, 남은 좌석은 {able}개")
 else:
-\tprint("등록되지 않은 별명입니다.")
-`
+\tprint("예약자가 아닙니다.")`
+            },
+            {
+                number: 8,
+                code: `import random
+
+random.seed(42)
+
+drinks = input().split()
+icecream = input().split()
+n = int(input())
+
+class VendingMachine:
+\tdef __init__(self, drinks, icecream):
+\t\tself.drinks = drinks
+\t\tself.icecream = icecream
+
+\tdef buy(self):
+\t\treturn random.choice(random.choice([self.drinks, self.icecream]))
+
+sales = {}
+machine = VendingMachine(drinks, icecream)
+
+for i in range(n):
+\titem = machine.buy()
+\tif item in sales:
+\t\tsales[item] += 1
+\telse:
+\t\tsales[item] = 1
+
+print(sales)`
             },
         ]
 
