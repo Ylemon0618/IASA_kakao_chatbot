@@ -18,186 +18,309 @@ async function run() {
     try {
         const problems = [
             {
-                number: 1,
-                code: `import random
-
-s, n, m = map(int, input().split())
-random.seed(s)
-
-arr = list(range(1, 101))
-random.shuffle(arr)
-
-max_sum, players = -1, []
-for i in range(n):
-\tl = sum(arr[i * m:i * m + m])
-\tif max_sum == l:
-\t\tplayers.append(i + 1)
-\telif max_sum < l:
-\t\tmax_sum = l
-\t\tplayers = [i + 1]
-
-print(*players)`
-            },
-            {
-                number: 2,
-                code: `from data.nickname import 이름, 형용사
-import random
-
-random.seed(int(input()))
-
-def make_nickname():
-\tname, adj = random.choice(이름), random.choice(형용사)
-\treturn f"{adj} {name}"
-
-result = make_nickname()
-print(result)`
-            },
-            {
-                number: 3,
-                code: `import math
-a, b = map(int, input().split())
-print(f"{math.gcd(a, b)} {math.sqrt(a ** 2 + b ** 2):.2f} {math.lcm(a, b)}")`
-            },
-            {
-                number: 4,
+                number: 9,
                 code: `import math
 
-class Object:
-\tdef __init__(self, x, y):
-\t\tself.x = x
-\t\tself.y = y
+class StageLight:
+\tdef __init__(self, n, r, k, c):
+\t\tself.n = n
+\t\tself.r = r
+\t\tself.k = k
+\t\tself.c = c
 
-\tdef distance(self, other):
-\t\treturn math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
+\tdef calculate(self):
+\t\tangle = math.pi / self.n
+\t\tlength = 2 * self.r * math.sin(angle)
+\t\tprint(math.ceil(length / self.k) * self.k * self.n * self.c)
 
-class Angel(Object):
-\tdef __init__(self, number, x, y, at):
-\t\tsuper().__init__(x, y)
-\t\tself.number = number
-\t\tself.at = at
-\t\tself.alive = True
-
-class Junhyeok(Object):
-\tdef __init__(self, energy):
-\t\tsuper().__init__(0, 0)
-\t\tself.energy = energy
-\t\tself.order = []
-
-\tdef current_at(self, angel, angels, R):
-\t\tcnt = 0
-\t\tfor i in angels:
-\t\t\tif angel.distance(i) <= R and i.alive and angel != i:
-\t\t\t\tcnt += 1
-\t\treturn angel.at + cnt * 5
-
-\tdef attack_cost(self, angel, angels, R):
-\t\treturn math.ceil(self.distance(angel)) + self.current_at(angel, angels, R)
-
-\tdef find_target(self, angels, R):
-\t\tmin_cost, target = 10e9, None
-\t\tfor angel in angels:
-\t\t\tcost = self.attack_cost(angel, angels, R)
-\t\t\tif cost < min_cost:
-\t\t\t\ttarget = angel
-\t\t\t\tmin_cost = cost
-\t\treturn target, min_cost
-
-\tdef attack(self, angel, cost):
-\t\tself.x, self.y = angel.x, angel.y
-\t\tself.energy -= cost
-\t\tangel.alive = False
-\t\tself.order.append(angel.number)
-
-\tdef battle(self, angels, R):
-\t\twhile angels or self.energy > 0:
-\t\t\ttarget, cost = self.find_target(angels, R)
-\t\t\tif self.energy < cost:
-\t\t\t\tbreak
-\t\t\tangels.remove(target)
-\t\t\tself.attack(target, cost)
-
-N, E, R = map(int, input().split())
-angels = []
-for i in range(N):
-\tx, y, at = map(int, input().split())
-\tangels.append(Angel(i + 1, x, y, at))
-
-HYEOK = Junhyeok(E)
-HYEOK.battle(angels, R)
-
-print("FAILED" if angels else "CLEAR")
-print(*HYEOK.order if HYEOK.order else "NONE")
-print(HYEOK.energy)`
+n, r, k, c = map(int, input().split())
+light = StageLight(n, r, k, c)
+light.calculate()`
             },
             {
-                number: 5,
-                code: `import math
-n, k = int(input()), int(input())
-print((k - 1) * math.comb(n - k + 1, k - 1))`
-            },
-            {
-                number: 6,
-                code: `from data.yelena import *
-show_face()
-if int(input()):
-\tchange_face()
-show_face()`
-            },
-            {
-                number: 7,
+                number: 10,
                 code: `import numpy as np
-import math
 
-def check(a, b, c):
-\tfor n in range(2, 11):
-\t\tif a == math.pow(c, n) + b:
-\t\t\treturn True
-\treturn False
+def rotate(theta):
+\treturn np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
 
-cnt = int(input())
-seat = np.array(list(map(int, input().split())))
+t = float(input())
+theta1 = 2 * np.pi * t / 1
+theta2 = 2 * np.pi * t / 1.881
 
-a, b, c = map(int, input().split())
-if check(a, b, c):
-\tprint(f"{c}시 예약자입니다.")
-\table = seat.sum()
-\tif b <= able:
-\t\tprint("입장 가능")
-\telse:
-\t\tprint(f"입장 불가, 남은 좌석은 {able}개")
-else:
-\tprint("예약자가 아닙니다.")`
+earth = (rotate(theta1) @ np.array([1.000, 0]).T).T
+mars = (rotate(theta2) @ np.array([1.524, 0]).T).T
+
+print(f"{earth[0]:.4f} {earth[1]:.4f}")
+print(f"{mars[0]:.4f} {mars[1]:.4f}")
+print(f"{((earth[0] - mars[0]) ** 2 + (earth[1] - mars[1]) ** 2) ** 0.5:.4f}")`
             },
             {
-                number: 8,
-                code: `import random
-
+                number: 11,
+                code: `import math
+import random
 random.seed(42)
 
-drinks = input().split()
-icecream = input().split()
-n = int(input())
+n, k = map(int, input().split())
+cnt = 0
+for _ in range(k):
+\tnum = random.randint(1, n)
+\tsqrt = math.sqrt(num)
+\tif int(sqrt) == sqrt:
+\t\tcnt += 1
 
-class VendingMachine:
-\tdef __init__(self, drinks, icecream):
-\t\tself.drinks = drinks
-\t\tself.icecream = icecream
-
-\tdef buy(self):
-\t\treturn random.choice(random.choice([self.drinks, self.icecream]))
-
-sales = {}
-machine = VendingMachine(drinks, icecream)
-
-for i in range(n):
-\titem = machine.buy()
-\tif item in sales:
-\t\tsales[item] += 1
-\telse:
-\t\tsales[item] = 1
-
-print(sales)`
+print(f"{cnt / k:.5f}")`
             },
+            {
+                number: 12,
+                code: `def assign_cleaning_duty(students, num_weeks, seed):
+\trandom.seed(seed)
+\tduty = []
+\tfor _ in range(num_weeks):
+\t\tnew = random.choice(students)
+\t\tstudents.remove(new)
+\t\tduty.append(new)
+\treturn duty
+
+def duty_probability(total, num_weeks):
+\treturn int(math.comb(total - 1, num_weeks - 1) * 100 / math.comb(total, num_weeks))`
+            },
+            {
+                number: 13,
+                code: `import math
+
+def calc_R(n, p):
+\tsigma = (n * p * (1 - p)) ** 0.5
+\tR = 2 * sigma * (math.pi ** 0.5)
+\treturn R
+
+n, p1, p2, m = map(float, input().split())
+R1, R2 = calc_R(n, p1), calc_R(n, p2)
+R = R1 * R2
+L = math.comb(int(m), 2) / R
+P = 1 - math.e ** (-L)
+print(f"{P:.4f}")`
+            },
+            {
+                number: 14,
+                code: `import random
+random.seed(42)
+
+n = int(input())
+arr = [input() for _ in range(n)]
+random.shuffle(arr)
+
+cnt = n // 4
+print(f"경기 수: {cnt}")
+for i in range(cnt):
+\tprint(f"{i + 1}번 경기: {arr[i * 4]} {arr[i * 4 + 1]} vs {arr[i * 4 + 2]} {arr[i * 4 + 3]}")
+if cnt * 4 == n:
+\tprint("대기자 없음")
+else:
+\tprint("대기자:", *arr[cnt * 4:], sep='\\n')`
+            },
+            {
+                number: 15,
+                code: `import random
+random.seed(42)
+
+A, C = map(int, input().split())
+damage = 0
+for i in range(1, 50001):
+\tif random.random() < C / 100:
+\t\tdamage += 2 * A
+\telse:
+\t\tdamage += A
+\tif not i % 6:
+\t\tdamage += A * (0.6 + C / 100)
+
+print(damage / 50000)`
+            },
+            {
+                number: 16,
+                code: `import datetime
+from dateutil.relativedelta import relativedelta
+
+date1 = datetime.date(*list(map(int, input().split())))
+date2 = datetime.date(*list(map(int, input().split())))
+print(f"만 {relativedelta(date2, date1).years}세")`
+            },
+            {
+                number: 17,
+                code: `import numpy as np
+arr = np.array(list(map(int, input().split())))
+print(f"평균: {np.mean(arr):.2f}, 최대: {np.max(arr)}, 최소: {np.min(arr)}")`
+            },
+            {
+                number: 18,
+                code: `import math
+import statistics
+
+l, n = map(float, input().split())
+data = list(map(float, input().split()))
+mean = statistics.mean(data)
+angle = math.radians(mean / 2)
+d = n * l / (2 * math.sin(angle))
+print(f"{mean:.4f}")
+print(f"{d:.4f}")`
+            },
+            {
+                number: 19,
+                code: `import math
+def minji_ang(r):
+\treturn 2 * math.pi * r`
+            },
+            {
+                number: 20,
+                code: `import numpy as np
+
+n, learning_rate = 16, 0.02
+raw_data, raw_real_value = [], []
+for _ in range(n):
+\ttemp = list(map(float, input().split()))
+\traw_data.append(temp[:3])
+\traw_real_value.append(temp[3])
+
+data = np.array(raw_data)
+real_value = np.array(raw_real_value)
+weight = np.array([1, 1, 1])
+for _ in range(1000):
+\tprediction = data @ weight
+\terror = prediction - real_value
+\tgradient = 2 / n * data.T @ error
+\tweight = weight - learning_rate * gradient
+
+prediction = data @ weight
+error = prediction - real_value
+loss = np.sum(error ** 2) / n
+test_data = np.array(list(map(float, input().split())))
+
+print(f"Weight: {weight[0]:.5f} {weight[1]:.5f} {weight[2]:.5f}")
+print(f"Loss: {loss:.5f}")
+print(f"Prediction: {test_data @ weight:.5f}")`
+            },
+            {
+                number: 21,
+                code: `import random
+random.seed(42)
+
+singers = ['방탄소년단', '세븐틴', '보이넥스트도어', '투모로우바이투게더']
+songs = {
+\t'방탄소년단': ['Magic Shop', 'No More Dream', '작은 것들을 위한 시', 'DNA', 'Save Me'],
+\t'세븐틴': ['Shining Diamond', 'CALL CALL CALL!', '손오공', '247', 'Lucky'],
+\t'보이넥스트도어': ['Adios', 'Count to Love', 'SAY CHEESE', 'Boom Boom Boom', '네가 생각난단 말이야'],
+\t'투모로우바이투게더': ['9와 4분의 3 승강장에서 너를 기다려', '어느 날 머리에서 뿔이 자랐다', 'Sugar Rush Ride', '하루에 하루만 더', 'Deja Vu']
+}
+
+n = int(input())
+singer = random.choice(singers)
+songs_selected = sorted(random.sample(songs[singer], n))
+print(f"[{singer}]의 노래:", *songs_selected)`
+            },
+            {
+                number: 22,
+                code: `import numpy as np
+
+def policy1():
+\tnew = zone.copy()
+\tnew[pos_x][pos_y] *= 2
+\treturn new
+
+def policy2():
+\tnew = zone.copy()
+\tnew[pos_y] += 5
+\treturn new
+
+def policy3():
+\tnew = zone.copy()
+\tr_min, r_max = max(0, pos_x - 2), min(r, pos_x + 3)
+\tc_min, c_max = max(0, pos_y - 2), min(c, pos_y + 3)
+\tnew[r_min:r_max, c_min:c_max] += 2
+\treturn new
+
+def policy4():
+\tnew = zone.copy()
+\tavg = new.mean()
+\tnew[new < int(avg / 2)] = int(avg / 2)
+\treturn new
+
+r, c = map(int, input().split())
+zone = [list(map(int, input().split())) for _ in range(r)]
+zone = np.array(zone)
+pos_x, pos_y = map(int, input().split())
+
+ans = []
+for _ in range(int(input())):
+\tpolicies = [[1, policy1()], [2, policy2()], [3, policy3()], [4, policy4()]]
+\tif ans:
+\t\tpolicies.pop(ans[-1] - 1)
+\tif 1 in ans and policies[0][0] == 1:
+\t\tpolicies.pop(0)
+\t
+\tpolicies.sort(key = lambda x: -np.sum(x[1]))
+\tzone = policies[0][1]
+\tans.append(policies[0][0] )
+
+print(zone.sum())
+print(*ans)`
+            },
+            {
+                number: 23,
+                code: `import math
+p, q = map(int, input().split())
+print(f"{p * math.pi + q * math.e:.5f}")`
+            },
+            {
+                number: 24,
+                code: `import math
+
+n = int(input())
+a = math.isqrt(n)
+while n % a:
+\ta -= 1
+b = n // a
+
+if a >= 2 and b >= 2:
+\tprint(b - a)
+else:
+\tprint(-1)`
+            },
+            {
+                number: 25,
+                code: `import random
+import math
+
+random.seed(int(input()))
+a, b = random.randint(1, 100), random.randint(1, 100)
+operator = random.choice(['+', '-', '*', '/'])
+if operator == '+':
+\tans = a + b
+elif operator == '-':
+\tans = a - b
+elif operator == '*':
+\tans = a * b
+else:
+\tans = math.floor(a / b)
+
+print(f"{a} {operator} {b} = ?")
+print(ans)`
+            },
+            {
+                number: 26,
+                code: `import math
+n = int(input())
+cnt = math.ceil(math.sqrt(math.factorial(n)))
+print(f"흔드는 횟수: {cnt}")
+print("결과: 희중이가 깨어났다!" if cnt >= 50 else "결과: 귀마개 끼고 참는 중...")`
+            },
+            {
+                number: 27,
+                code: `import numpy as 랆4qZ꾥Fa
+data = [list(map(int, input().split())) for _ in range(3)]
+arr = 랆4qZ꾥Fa.array(data)
+print(*랆4qZ꾥Fa.sum(arr, axis=1))
+print(*list(map(int, 랆4qZ꾥Fa.mean(arr, axis=0))))`
+            }
         ]
 
         await mongoose.connect(process.env.MONGO_URI);
